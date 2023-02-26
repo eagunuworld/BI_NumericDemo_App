@@ -1,0 +1,151 @@
+pipeline {
+  //agent any
+   agent{
+      label "kubeadm-master"
+       }
+
+    options {
+      buildDiscarder logRotator(
+        artifactDaysToKeepStr: '1',
+        artifactNumToKeepStr: '2',
+        daysToKeepStr: '1',
+        numToKeepStr: '2')
+      timestamps()
+     }
+
+  tools{
+      maven 'demo-maven:3.8.6'
+      }
+
+  stages {
+
+    stage('Build Artifact - Maven') {
+      steps {
+        sh "mvn clean package -DskipTests=true"
+        archive 'target/*.jar'
+      }
+    }
+
+    stage('Unit Tests - JUnit and JaCoCo') {
+      steps {
+        sh "mvn test"
+      }
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
+          jacoco execPattern: 'target/jacoco.exec'
+        }
+      }
+    }
+   
+   stage('Mutation Tests - PIT') {            //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+      steps {
+         parallel(
+               "Mutation Test PIT": {
+                    sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video 
+                  },
+                //  post {
+                //    always {
+                //         pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+                //       }
+                //   },
+                  "Dependency Check": {
+                      sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+                  }
+                // post {
+                //    always {
+                //      dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+                //     }
+                // }
+             )
+         }
+      }
+
+    // stage('SonarQube - SAST') {
+    //   steps {
+    //     withSonarQubeEnv('sonarQube') {
+    //       sh "mvn clean package sonar:sonar \
+    //        -Dsonar.projectKey=eagunu-number \
+    //        -Dsonar.host.url=http://34.16.128.183:9000 \
+    //        -Dsonar.login=sqp_b920c762c89da87913cee2831bb77addc36c73b6"
+    //     }
+    //     timeout(time: 2, unit: 'MINUTES') {
+    //       script {
+    //         waitForQualityGate abortPipeline: true
+    //       }
+    //     }
+    //   }
+    // }
+    //  stage('SonarQube - SAST') {      //without qg and connected using jenkins url to sonar webhook(administration>configuration)
+    //   steps {
+    //     sh "mvn clean package sonar:sonar \
+    //        -Dsonar.projectKey=eagunu-number \
+    //        -Dsonar.host.url=http://10.182.0.4:9000 \
+    //        -Dsonar.login=sqp_b920c762c89da87913cee2831bb77addc36c73b6"
+    //   }
+    // }
+
+    stage('SonarQube Analysis And Docker build push') {
+           steps {
+             parallel(
+               "SonarQube - SAST": {
+                     sh "mvn clean package sonar:sonar \
+                         -Dsonar.projectKey=eagunu-number \
+                         -Dsonar.host.url=http://10.182.0.4:9000 \
+                         -Dsonar.login=sqp_b920c762c89da87913cee2831bb77addc36c73b6"
+                   },
+                  "Docker Build and Push": {
+                       withDockerRegistry([credentialsId: "eagunuworld_dockerhub_creds_username-pwd", url: ""]) {
+                        sh 'printenv'
+                       sh 'docker build -t eagunuworld/numeric-app:""$GIT_COMMIT"" .'
+                      sh 'docker push eagunuworld/numeric-app:""$GIT_COMMIT""'
+                    }
+                 }
+             )
+           }
+         }
+
+
+    // stage('Vulnerability Scan - Docker ') {                     //## Adding Dependency Check to pom.xml
+    //   steps {
+    //     sh "mvn dependency-check:check"                          //OWASP Dependency check plugin is required via jenkins
+    //   }
+    //   post {
+    //     always {
+    //       dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+    //     }
+    //   }
+    // }
+
+    // stage('Docker Build and Push') {
+    //   steps {
+    //     withDockerRegistry([credentialsId: "eagunuworld_dockerhub_creds_username-pwd", url: ""]) {
+    //       sh 'printenv'
+    //       sh 'docker build -t eagunuworld/numeric-app:""$GIT_COMMIT"" .'
+    //       sh 'docker push eagunuworld/numeric-app:""$GIT_COMMIT""'
+    //     }
+    //   }
+    // }
+
+    stage('Deployment_ns_prod') {
+           steps {
+             parallel(
+               "Deployment": {
+                    sh "ls -lart"
+                    sh "sed -i 's#replace#eagunuworld/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
+                   sh "kubectl apply -f k8s_deployment_service.yaml"
+                 },
+               "Rollout Status": {
+                   sh "bash k8s-deployment-rollout-status.sh"
+                 }
+             )
+           }
+         }
+    
+  }
+
+}
+
+
+
+

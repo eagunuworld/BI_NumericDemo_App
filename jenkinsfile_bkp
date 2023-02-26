@@ -1,0 +1,180 @@
+@Library('shared-mss') _
+
+pipeline {
+  agent{
+      label "kubeadm-master"
+       }
+
+    options {
+      buildDiscarder logRotator(
+        artifactDaysToKeepStr: '1',
+        artifactNumToKeepStr: '2',
+        daysToKeepStr: '1',
+        numToKeepStr: '2')
+      timestamps()
+     }
+
+  tools{
+      maven 'demo-maven:3.8.6'
+      }
+      environment {
+        VERSION = "${env.BUILD_ID}"
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+        BRANCH_NAME = "${env.BRANCH_NAME}"
+        REGISTRY = 'eagunuworld/mongodb-springboot-app'
+        REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
+         deploymentName = "devsecops"
+         containerName = "devsecops-container"
+         serviceName = "devsecops-svc"
+         imageName = "eagunuworld/numeric-app:${GIT_COMMIT}"
+         applicationURL = "http://devsecops-demo.eastus.cloudapp.azure.com/"
+         applicationURI = "/increment/99"
+       }
+
+  stages {
+      stage('Build And Artifact') {
+            steps {
+              sh "mvn clean package -DskipTests=true"
+              archive 'target/*.jar'
+            }
+        }
+
+ stage('Unit Tests - JUnit and Jacoco') {
+            steps {
+              sh "mvn test"
+              }
+            post {
+              always {
+                junit 'target/surefire-reports/*.xml'
+                jacoco execPattern: 'target/jacoco.exec'
+               }
+          }
+        }
+//To be reviewed agent
+ // stage('Mutation Tests - PIT') {
+ //        steps {
+ //                sh "mvn org.pitest:pitest-maven:mutationCoverage"
+ //              }
+ //              post {
+ //                always {
+ //                pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+ //              }
+ //           }
+ //        }
+ //
+ // stage('SonarQube - SAST') {
+ //       steps {
+ //         withSonarQubeEnv('sonarQube') {
+ //           sh "mvn clean verify sonar:sonar -Dsonar.projectKey=eagunu-mss-demo -Dsonar.host.url=http://10.182.0.4:9000 -Dsonar.login=sqp_fdd7574f66d2a97e8f56a54bff60d16e0fa79e4a"
+ //         }
+         // timeout(time: 2, unit: 'MINUTES') {
+         //   script {
+         //     waitForQualityGate abortPipeline: true
+         //   }
+         // }
+     //   }
+     // }
+//To be reviewed agent
+ // stage('Vulnerability Scan02 - Docker ') {
+ //      steps {
+ //             sh "mvn dependency-check:check"
+ //             }
+ //           post {
+ //             always {
+ //               dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+ //               }
+ //             }
+ //          }
+
+ stage('Vulnerability Scan - Docker') {
+        steps {
+            parallel(
+                 "Dependency Scan": {
+                sh "mvn test"
+                },
+                "Trivy Scan": {
+               sh "bash trivy-docker-image-scan.sh"
+             }
+          )
+        }
+      }
+  stage('updating image name') {
+      steps {
+           sh "bash replacement_image.sh"
+             }
+           }
+//Not working to be reviewed later
+// stage('Vulnerability Scan - Docker') {
+//        steps {
+//          parallel(
+//            "Dependency Scan": {
+//              sh "mvn dependency-check:check"
+//            },
+//            "Trivy Scan": {
+//              sh "bash trivy-docker-image-scan.sh"
+//            },
+//            "OPA Conftest": {
+//              sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+//            }
+//          )
+//        }
+//      }
+
+  stage('Docker Build andPush') {
+        steps {
+          withDockerRegistry([credentialsId: "eagunuworld_dockerhub_creds_username-pwd", url: ""]) {
+              sh 'printenv'
+              sh 'docker build -t eagunuworld/numeric-app:""$GIT_COMMIT"" .'
+              sh 'docker push eagunuworld/numeric-app:""$GIT_COMMIT""'
+            }
+         }
+      }
+
+  stage('K8S Deployment - DEV') {
+           steps {
+             parallel(
+               "Deployment": {
+                 sshagent(['node01-jenkins-connection']) {
+                   sh "scp -o StrictHostKeyChecking=no k8s-deployment-rollout-status.sh k8s-deployment.sh k8s_deployment_service.yaml root@34.174.78.26:workSpaced/BI_Dq_Api"
+                   sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Dq_Api bash k8s-deployment.sh"
+                 }
+               },
+               "Rollout Status": {
+                 sshagent(['node01-jenkins-connection']) {
+                   //sh "scp -o StrictHostKeyChecking=no k8s-deployment-rollout-status.sh makutaworldmpm@10.206.0.10:"
+                   sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Dq_Api bash k8s-deployment-rollout-status.sh"
+                 }
+               }
+             )
+           }
+         }
+
+  stage('QA Deployment') {
+          steps {
+              parallel(
+                "Deployment": {
+                  sshagent(['node01-jenkins-connection']) {
+                    sh "scp -o StrictHostKeyChecking=no qa-deployment-rollout-status.sh qa-deployment.sh root@34.174.78.26:workSpaced/BI_Qq_Api/"
+                      sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Qq_Api/ bash qa-deployment.sh"
+                        }
+                      },
+                      "Rollout Status": {
+                        sshagent(['node01-jenkins-connection']) {
+                          //sh "scp -o StrictHostKeyChecking=no k8s-deployment-rollout-status.sh makutaworldmpm@10.206.0.10:"
+                          sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Qq_Api/ bash qa-deployment-rollout-status.sh"
+                        }
+                      }
+                    )
+                  }
+                }
+
+ stage('Remove All Images Before Deployment') {
+        steps{
+          sshagent(['node01-jenkins-connection']) {
+                sh 'docker rmi  $(docker images -q)'
+                }
+              }
+          }
+
+  }
+}

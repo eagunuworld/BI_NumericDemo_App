@@ -1,0 +1,20 @@
+ #installed both on master and worker
+ #https://falco.org/docs/getting-started/installation/
+FALCO_FRONTEND=noninteractive apt-get install -y falco
+curl -s https://falco.org/repo/falcosecurity-packages.asc | apt-key add -
+echo "deb https://download.falco.org/packages/deb stable main" | tee -a /etc/apt/sources.list.d/falcosecurity.list
+apt-get update -y
+apt install -y dkms make linux-headers-$(uname -r)
+apt install -y clang llvm
+apt install -y dialog
+apt-get install -y falco
+systemctl list-units | grep falco
+falco
+falco-driver-loader
+falco
+systemctl start falco-bpf.service
+systemctl list-units | grep falco
+clear
+ cat /etc/shadow
+clear
+kubectl run demo-pod --image=nginx
