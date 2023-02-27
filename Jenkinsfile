@@ -52,7 +52,7 @@ pipeline {
           echo 'Testing...snykSecurity'
           snykSecurity(
             snykInstallation: 'snykSecurity',
-            snykTokenId: 'e6772409-004f-4ec9-ba85-60de5fd9d672',
+            snykTokenId: 'snyk-jenkins-authentication-tokeon-id',
             // place other optional parameters here, for example:
             additionalArguments: '--all-projects --detection-depth=pom.xml'
           )
