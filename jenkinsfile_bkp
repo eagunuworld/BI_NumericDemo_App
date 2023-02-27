@@ -1,180 +1,208 @@
-@Library('shared-mss') _
-
 pipeline {
-  agent{
+  //agent any
+  //kubectl -n default create deploy node-app --image siddharth67/node-service:v1
+  //kubectl -n default expose deploy node-app --name node-service --port 5000
+   agent{
       label "kubeadm-master"
        }
 
-    options {
-      buildDiscarder logRotator(
-        artifactDaysToKeepStr: '1',
-        artifactNumToKeepStr: '2',
-        daysToKeepStr: '1',
-        numToKeepStr: '2')
-      timestamps()
-     }
+       options {
+         buildDiscarder logRotator(artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '1', numToKeepStr: '2')
+         timestamps()
+        }
 
   tools{
       maven 'demo-maven:3.8.6'
       }
-      environment {
-        VERSION = "${env.BUILD_ID}"
-        BUILD_NUMBER = "${env.BUILD_NUMBER}"
-        BRANCH_NAME = "${env.BRANCH_NAME}"
-        REGISTRY = 'eagunuworld/mongodb-springboot-app'
-        REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
-         deploymentName = "devsecops"
-         containerName = "devsecops-container"
-         serviceName = "devsecops-svc"
-         imageName = "eagunuworld/numeric-app:${GIT_COMMIT}"
-         applicationURL = "http://devsecops-demo.eastus.cloudapp.azure.com/"
-         applicationURI = "/increment/99"
-       }
+
+   environment {
+    deploymentName = "demo-pod"
+    containerName = "demo-con"
+    serviceName = "demo-svc"
+    imageName = "eagunuworld/numeric-app:${GIT_COMMIT}"
+    applicationURL = "34.174.241.37"
+    applicationURI = "increment/100"
+  }
 
   stages {
-      stage('Build And Artifact') {
-            steps {
-              sh "mvn clean package -DskipTests=true"
-              archive 'target/*.jar'
-            }
-        }
 
- stage('Unit Tests - JUnit and Jacoco') {
-            steps {
-              sh "mvn test"
-              }
-            post {
-              always {
-                junit 'target/surefire-reports/*.xml'
-                jacoco execPattern: 'target/jacoco.exec'
-               }
-          }
-        }
-//To be reviewed agent
- // stage('Mutation Tests - PIT') {
- //        steps {
- //                sh "mvn org.pitest:pitest-maven:mutationCoverage"
- //              }
- //              post {
- //                always {
- //                pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
- //              }
- //           }
- //        }
- //
- // stage('SonarQube - SAST') {
- //       steps {
- //         withSonarQubeEnv('sonarQube') {
- //           sh "mvn clean verify sonar:sonar -Dsonar.projectKey=eagunu-mss-demo -Dsonar.host.url=http://10.182.0.4:9000 -Dsonar.login=sqp_fdd7574f66d2a97e8f56a54bff60d16e0fa79e4a"
- //         }
-         // timeout(time: 2, unit: 'MINUTES') {
-         //   script {
-         //     waitForQualityGate abortPipeline: true
-         //   }
-         // }
-     //   }
-     // }
-//To be reviewed agent
- // stage('Vulnerability Scan02 - Docker ') {
- //      steps {
- //             sh "mvn dependency-check:check"
- //             }
- //           post {
- //             always {
- //               dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
- //               }
- //             }
- //          }
+    //  stage('StaticAnalysis Codes Trivy Vulnerability') {
+    //   steps {
+    //     parallel(
+    //           "SonarQube,Docker And Trivy": {
+    //             sh "mvn clean package sonar:sonar \
+    //             -Dsonar.projectKey=eagunu-number \
+    //             -Dsonar.host.url=http://10.182.0.4:9000 \
+    //            -Dsonar.login=sqp_b920c762c89da87913cee2831bb77addc36c73b6"
+    //          },
+    //          "ScanningDockerImage": {
+    //         sh "bash trivy-docker-image-scan.sh"
+    //       },
+    //       "scm codes": {
+    //         sh "ls -lart"
+    //       }
+    //     )
+    //   }
+    // }
 
- stage('Vulnerability Scan - Docker') {
-        steps {
-            parallel(
-                 "Dependency Scan": {
-                sh "mvn test"
-                },
-                "Trivy Scan": {
-               sh "bash trivy-docker-image-scan.sh"
-             }
-          )
-        }
-      }
-  stage('updating image name') {
+    stage('Build Artifact - Maven') {
       steps {
-           sh "bash replacement_image.sh"
-             }
-           }
-//Not working to be reviewed later
-// stage('Vulnerability Scan - Docker') {
-//        steps {
-//          parallel(
-//            "Dependency Scan": {
-//              sh "mvn dependency-check:check"
-//            },
-//            "Trivy Scan": {
-//              sh "bash trivy-docker-image-scan.sh"
-//            },
-//            "OPA Conftest": {
-//              sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
-//            }
-//          )
-//        }
-//      }
-
-  stage('Docker Build andPush') {
-        steps {
-          withDockerRegistry([credentialsId: "eagunuworld_dockerhub_creds_username-pwd", url: ""]) {
-              sh 'printenv'
-              sh 'docker build -t eagunuworld/numeric-app:""$GIT_COMMIT"" .'
-              sh 'docker push eagunuworld/numeric-app:""$GIT_COMMIT""'
-            }
-         }
+        sh "mvn clean package -DskipTests=true"
+        archiveArtifacts 'target/*.jar'
       }
+    }
 
-  stage('K8S Deployment - DEV') {
+  //   stage('Unit Tests - JUnit and JaCoCo') {
+  //     steps {
+  //       sh "mvn test"
+  //     }
+  //     post {
+  //       always {
+  //         junit 'target/surefire-reports/*.xml'
+  //         jacoco execPattern: 'target/jacoco.exec'
+  //       }
+  //     }
+  //   }
+
+  //  stage('Mutation Tests') {
+  //     steps {
+  //        sh "mvn org.pitest:pitest-maven:mutationCoverage"
+  //        }
+  //     post {
+  //       always {
+  //         pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+  //       }
+  //     }
+  //   }
+
+  //  stage('Mutation Tests - PIT') {      NO      //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+  //     steps {
+  //        parallel(
+  //              "Mutation Test PIT": {
+  //                   sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
+  //                 },
+  //                 "Dependency Check": {
+  //                     sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+  //                 },
+  //                "OPA Conftest": {
+  //                 sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+  //              }
+  //            )
+  //        }
+  //     }
+
+    // stage('VulnerabilityScan - Docker ') {
+    //   steps {
+    //     sh "mvn dependency-check:check"
+    //   }
+    //   post {
+    //     always {
+    //       dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+    //     }
+    //   }
+    // }
+
+     // stage('Vulnerability Scan NO - Kubernetes') {
+    //   steps {
+    //     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego k8s_deployment_service.yaml'
+    //   }
+    // }
+
+    stage('Docker Image And Trivy') {
            steps {
              parallel(
-               "Deployment": {
-                 sshagent(['node01-jenkins-connection']) {
-                   sh "scp -o StrictHostKeyChecking=no k8s-deployment-rollout-status.sh k8s-deployment.sh k8s_deployment_service.yaml root@34.174.78.26:workSpaced/BI_Dq_Api"
-                   sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Dq_Api bash k8s-deployment.sh"
-                 }
-               },
-               "Rollout Status": {
-                 sshagent(['node01-jenkins-connection']) {
-                   //sh "scp -o StrictHostKeyChecking=no k8s-deployment-rollout-status.sh makutaworldmpm@10.206.0.10:"
-                   sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Dq_Api bash k8s-deployment-rollout-status.sh"
-                 }
-               }
+                  "Docker Build and Push": {
+                       withDockerRegistry([credentialsId: "eagunuworld_dockerhub_creds_username-pwd", url: ""]) {
+                        sh 'printenv'
+                       sh 'docker build -t eagunuworld/numeric-app:""$GIT_COMMIT"" .'
+                      sh 'docker push eagunuworld/numeric-app:""$GIT_COMMIT""'
+                    }
+                 },
+                 "Remove Trivy": {
+                sh "sudo rm -rf trivy"
+              }
              )
            }
          }
 
-  stage('QA Deployment') {
-          steps {
-              parallel(
-                "Deployment": {
-                  sshagent(['node01-jenkins-connection']) {
-                    sh "scp -o StrictHostKeyChecking=no qa-deployment-rollout-status.sh qa-deployment.sh root@34.174.78.26:workSpaced/BI_Qq_Api/"
-                      sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Qq_Api/ bash qa-deployment.sh"
-                        }
-                      },
-                      "Rollout Status": {
-                        sshagent(['node01-jenkins-connection']) {
-                          //sh "scp -o StrictHostKeyChecking=no k8s-deployment-rollout-status.sh makutaworldmpm@10.206.0.10:"
-                          sh "ssh -o StrictHostKeyChecking=no root@34.174.78.26:workSpaced/BI_Qq_Api/ bash qa-deployment-rollout-status.sh"
-                        }
-                      }
-                    )
-                  }
-                }
+    stage('Vulnerability Scan - Kubernetes') {
+      steps {
+        parallel(
+          "OPA Scan": {
+            sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego k8s_deployment_service.yaml'
+          },
+          "Kubesec Scan": {
+            sh "bash kubesec-scan.sh"
+          },
+          "TrivyScanningArtifacts": {
+            sh "bash trivy-k8s-scan.sh"
+          }
+        )
+      }
+    }
 
- stage('Remove All Images Before Deployment') {
-        steps{
-          sshagent(['node01-jenkins-connection']) {
-                sh 'docker rmi  $(docker images -q)'
-                }
-              }
+    stage('Remove All Images Before Deployment') {
+           steps{
+                  sh 'docker rmi  $(docker images -q)'
+            }
           }
 
+    stage('mpm Deployment') {       //section 3 records 68
+           steps {
+             parallel(
+               "Deployment": {
+                    sh "ls -lart"
+                   sh "bash k8s-deployment.sh"
+                 },
+               "Rollout Status": {
+                   sh "bash k8s-deployment-rollout-status.sh"
+                 }
+             )
+           }
+         }
+
+    //  stage('Integration Tests - mpm') {
+    //   steps {
+    //     script {
+    //       try {
+    //           sh "bash integration-test.sh"
+    //       } catch (exc) {
+    //           sh "kubectl -n default rollout undo deploy ${deploymentName}"
+    //         }
+    //       }
+    //     }
+    //   }
+
+  stage('Prompte to PROD?') {
+      steps {
+          timeout(time: 2, unit: 'DAYS') {
+           input 'Kindly Review And Approve Deployment To QA NameSpace'
+         }
+       }
+      }
+
+
+    // stage('OWASP ZAP - DAST') {
+    //   steps {
+    //       sh 'bash zap.sh'
+    //     }
+    //    }
+    //   }
+    // post {
+    // always {
+    //   junit 'target/surefire-reports/*.xml'
+    //   jacoco execPattern: 'target/jacoco.exec'
+    //   publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP Report', reportTitles: 'OWASP ZAP Report', useWrapperFileDirectly: true])
+    //   //pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+    //   //dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+    // }
+
+    // success {
+
+    // }
+
+    // failure {
+
+    // }
   }
 }
