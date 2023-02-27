@@ -7,7 +7,7 @@ pipeline {
        }
 
        options {
-         buildDiscarder logRotator( artifactDaysToKeepStr: '1', artifactNumToKeepStr: '2', daysToKeepStr: '1', numToKeepStr: '2')
+         buildDiscarder logRotator( artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '1', numToKeepStr: '2')
          timestamps()
         }
 
@@ -54,7 +54,7 @@ pipeline {
             snykInstallation: 'snykSecurity',
             snykTokenId: 'snyk-jenkins-authentication-tokeon-id',
             // place other optional parameters here, for example:
-            additionalArguments: '--all-projects --detection-depth=pom.xml'
+            //additionalArguments: '--all-projects --detection-depth=pom.xml'
           )
         }
       }
