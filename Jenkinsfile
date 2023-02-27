@@ -40,12 +40,24 @@ pipeline {
               "No Tasks": {
              sh "ls -lart"
             },
-           "show content": {
-            sh "echo $applicationURL"
+           "checkingFile": {
+            sh "ls -lart"
             }
           )
        }
      }
+
+    stage('snykSecurity') {
+        steps {
+          echo 'Testing...snykSecurity'
+          snykSecurity(
+            snykInstallation: 'snykSecurity',
+            snykTokenId: 'e6772409-004f-4ec9-ba85-60de5fd9d672',
+            // place other optional parameters here, for example:
+            additionalArguments: '--all-projects --detection-depth=pom.xml'
+          )
+        }
+      }
 
     stage('Build Artifact - Maven') {
       steps {
