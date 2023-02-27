@@ -40,8 +40,8 @@ pipeline {
               "No Tasks": {
              sh "ls -lart"
             },
-           "No Tasks": {
-            sh "ls -lart"
+           "show content": {
+            sh "cat $applicationURL"
             }
           )
        }
