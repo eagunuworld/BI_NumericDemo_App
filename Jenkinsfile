@@ -34,14 +34,14 @@ pipeline {
       stage('StaticAnalysis') {
        steps {
          parallel(
-               "SonarQube,Docker And Trivy": {
-                 sh "mvn clean verify sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://192.168.1.108:9000 -Dsonar.login=sqp_3b6d43552713b04ff6f11d190beba29c025faaad"
+               "StaticCodesAnalysis": {
+                 sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://192.168.1.108:9000 -Dsonar.login=sqp_3b6d43552713b04ff6f11d190beba29c025faaad"
               },
               "No Tasks": {
              sh "ls -lart"
             },
            "show content": {
-            sh "cat $applicationURL"
+            sh "echo $applicationURL"
             }
           )
        }
