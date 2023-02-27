@@ -47,18 +47,6 @@ pipeline {
        }
      }
 
-    stage('snykSecurity') {
-        steps {
-          echo 'Testing...snykSecurity'
-          snykSecurity(
-            snykInstallation: 'snykSecurity',
-            snykTokenId: 'snyk-jenkins-authentication-tokeon-id',
-            // place other optional parameters here, for example:
-            //additionalArguments: '--all-projects --detection-depth=pom.xml'
-          )
-        }
-      }
-
     stage('Build Artifact - Maven') {
       steps {
         sh "mvn clean package -DskipTests=true"

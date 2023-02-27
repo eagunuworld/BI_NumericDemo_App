@@ -62,6 +62,14 @@ COPY ${JAR_FILE} /home/eagunuk8s/app.jar
 USER eagunuk8s
 ENTRYPOINT ["java","-jar","/home/eagunuk8s/app.jar"]
 
-
-
-
+stage('snykSecurity') {
+    steps {
+      echo 'Testing...snykSecurity'
+      snykSecurity(
+        snykInstallation: 'snykSecurity',
+        snykTokenId: 'snyk-jenkins-authentication-tokeon-id',
+        // place other optional parameters here, for example:
+        //additionalArguments: '--all-projects --detection-depth=pom.xml'
+      )
+    }
+  }
