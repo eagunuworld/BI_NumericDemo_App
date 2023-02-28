@@ -34,7 +34,7 @@ pipeline {
      stage('SonarQube - SAST') {  //with qualigate set to fail build
       steps {
         withSonarQubeEnv('SonarQube') {
-          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.248.94:9000 -Dsonar.login=sqp_7cc61899f6f0b28a1491fa9aad5c25780c924ce7"
+          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.248.94:9000 -Dsonar.login=sqp_c13dc0b55ee2d6771fcc1167db2d866ddc7c1b26"
         }
         timeout(time: 2, unit: 'MINUTES') {
           script {
