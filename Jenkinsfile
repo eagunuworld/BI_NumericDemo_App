@@ -12,7 +12,7 @@ pipeline {
         }
 
      parameters {
-          choice choices: ['main', 'lab_mutation_Test', 'walmart-dev-mss'], description: 'This is choice paramerized job', name: 'BranchName'
+          choice choices: ['main', 'lab_mutation_Test', 'walmart-dev-mss', 'dependencyCheckTrivyOpenContest'], description: 'This is choice paramerized job', name: 'BranchName'
           string defaultValue: 'Eghosa DevOps', description: 'please developer select the person\' name', name: 'personName'
         }
 
@@ -52,7 +52,7 @@ pipeline {
         archiveArtifacts 'target/*.jar'
       }
     }
-    
+
  stage('Vulnerability Scan - Docker ') {
       steps {
         sh "mvn dependency-check:check"
