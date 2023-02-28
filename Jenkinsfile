@@ -31,6 +31,18 @@ pipeline {
 
   stages {
 
+     stage('SonarQube - SAST') {
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.169.116:9000 -Dsonar.login=sqp_7cc61899f6f0b28a1491fa9aad5c25780c924ce7"
+        }
+        timeout(time: 2, unit: 'MINUTES') {
+          script {
+            waitForQualityGate abortPipeline: true
+          }
+        }
+      }
+    }
     //   stage('StaticAnalysis') {
     //    steps {
     //      parallel(
