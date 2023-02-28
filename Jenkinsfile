@@ -35,7 +35,7 @@ pipeline {
        steps {
          parallel(
                "StaticCodesAnalysis": {
-                 sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://192.168.1.108:9000 -Dsonar.login=sqp_3b6d43552713b04ff6f11d190beba29c025faaad"
+                 sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.179.93:9000 -Dsonar.login=sqp_8883e46e7bb605e8f6a6828bc8c9253be5916ae7"
               },
               "No Tasks": {
              sh "ls -lart"
@@ -92,6 +92,16 @@ pipeline {
   //            )
   //        }
   //     }
+
+  stage('Stop And Remove Running Container') {
+      steps{
+          sshagent(['ec2-user-password-credentials']) {
+               sh 'docker ps -f name=springboot -q | xargs --no-run-if-empty docker container stop'
+               sh 'docker container ls -a -fname=springboot  -q | xargs -r docker container rm'
+               sh 'docker container ls '
+                 }
+                }
+             }
 
     stage('Remove All Images Before Deployment') {
            steps{
