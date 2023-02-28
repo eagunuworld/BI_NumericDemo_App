@@ -92,23 +92,6 @@ pipeline {
   //            )
   //        }
   //     }
-
-  stage('Stop And Remove Running Container') {
-      steps{
-          sshagent(['ec2-user-password-credentials']) {
-               sh 'docker ps -f name=springboot -q | xargs --no-run-if-empty docker container stop'
-               sh 'docker container ls -a -fname=springboot  -q | xargs -r docker container rm'
-               sh 'docker container ls '
-                 }
-                }
-             }
-
-    stage('Remove All Images Before Deployment') {
-           steps{
-                  sh 'docker rmi  $(docker images -q)'
-            }
-          }
-
     // success {
 
     // }
