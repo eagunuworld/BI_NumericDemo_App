@@ -30,19 +30,6 @@ pipeline {
   }
 
   stages {
-
-    //  stage('SonarQube - SAST') {  
-    //   steps {
-    //     withSonarQubeEnv('SonarQube') {
-    //       sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.248.94:9000 -Dsonar.login=sqp_c13dc0b55ee2d6771fcc1167db2d866ddc7c1b26"
-    //     }
-    //     timeout(time: 2, unit: 'MINUTES') {
-    //       script {
-    //         waitForQualityGate abortPipeline: true
-    //       }
-    //     }
-    //   }
-    // }
       stage('StaticAnalysis') {   //without qg set 
        steps {
          parallel(
@@ -65,30 +52,17 @@ pipeline {
         archiveArtifacts 'target/*.jar'
       }
     }
-
-  //   stage('Unit Tests - JUnit and JaCoCo') {
-  //     steps {
-  //       sh "mvn test"
-  //     }
-  //     post {
-  //       always {
-  //         junit 'target/surefire-reports/*.xml'
-  //         jacoco execPattern: 'target/jacoco.exec'
-  //       }
-  //     }
-  //   }
-
-     stage('Mutation Tests') {
-        steps {
-           sh "mvn org.pitest:pitest-maven:mutationCoverage"
-           }
-        post {
-          always {
-            pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-          }
+    
+ stage('Vulnerability Scan - Docker ') {
+      steps {
+        sh "mvn dependency-check:check"
+      }
+      post {
+        always {
+          dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
         }
       }
-
+    }
   //  stage('Mutation Tests - PIT') {      NO      //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
   //     steps {
   //        parallel(
