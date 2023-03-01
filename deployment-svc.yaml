@@ -17,7 +17,7 @@ spec:
       labels:
         app: demo-svc
     spec:
-      #serviceAccountName: default
+      serviceAccountName: default
       containers:
       - image: replace
         name: demo-con

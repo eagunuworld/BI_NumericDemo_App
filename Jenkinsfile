@@ -71,7 +71,6 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
               sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
-              sh 'printenv'
               sh 'docker build -t ${REGISTRY}:${VERSION} .'
                 }
                  sh 'docker push ${REGISTRY}:${VERSION}'
@@ -87,8 +86,8 @@ stage('KubernetesVulnerability Scanning') {
                   "ScanningDeploymentFile": {
                     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego deployment-svc.yaml'
                    },
-                   "DisplayContent": {
-                    sh "ls -lart"
+                   "printingEnv": {
+                    sh "printenv "
                    },
                  "kubesec Scannning": {
                   sh 'bash kubesec-scan.sh'
