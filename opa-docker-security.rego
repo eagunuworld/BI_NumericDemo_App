@@ -105,18 +105,3 @@ deny[msg] {
     multi_stage == false
     msg = sprintf("You COPY, but do not appear to use multi-stage builds...", [])
 }
-Footer
-© 2023 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
-dockerfile-security/dockerfile-security.rego at main · gbrindisi/dockerfile-security

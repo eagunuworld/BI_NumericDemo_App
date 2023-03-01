@@ -47,7 +47,7 @@ pipeline {
       }
     }
 
-   stage('Vulnerability Scan') {        //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+   stage('Vulnerability Scan') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
       steps {
          parallel(
                "Mutation Test PIT": {
