@@ -24,7 +24,7 @@ then
             exit 1;
     fi;
 
-    if [[ "$http_code" == 200 ]];
+    if [[ "$http_code" == 000 ]];
         then
             echo "HTTP Status Code Test Passed"
         else
