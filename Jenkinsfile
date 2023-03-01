@@ -12,7 +12,7 @@ pipeline {
         }
 
      parameters {
-          choice choices: ['main', 'lab_mutation_Test', 'walmart-dev-mss', 'dependencyCheckTrivyOpenContest'], description: 'This is choice paramerized job', name: 'BranchName'
+          choice choices: ['main', 'owasp_zap_scanning', 'lab_mutation_Test', 'walmart-dev-mss', 'dependencyCheckTrivyOpenContest'], description: 'This is choice paramerized job', name: 'BranchName'
           string defaultValue: 'Eghosa DevOps', description: 'please developer select the person\' name', name: 'personName'
         }
 
@@ -21,13 +21,23 @@ pipeline {
       }
 
    environment {
-    deploymentName = "demo-pod"
-    containerName = "demo-con"
-    serviceName = "demo-svc"
-    imageName = "eagunuworld/numeric-app:${GIT_COMMIT}"
-    applicationURL = "34.174.241.37"
-    applicationURI = "increment/100"
-  }
+            DEPLOY = "${env.BRANCH_NAME == "python-dramed" || env.BRANCH_NAME == "master" ? "true" : "false"}"
+            NAME = "${env.BRANCH_NAME == "python-dramed" ? "example" : "example-staging"}"
+            //def mavenHome =  tool name: "maven:3.6.3", type: "maven"
+            //def mavenCMD = "${mavenHome}/usr/share/maven"
+            VERSION = "${env.BUILD_ID}"
+            REGISTRY = 'eagunuworld/numeric-app'
+            REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
+          }
+
+  //  environment {
+  //   deploymentName = "demo-pod"
+  //   containerName = "demo-con"
+  //   serviceName = "demo-svc"
+  //   imageName = "eagunuworld/numeric-app:${GIT_COMMIT}"
+  //   applicationURL = "34.174.241.37"
+  //   applicationURI = "increment/100"
+  // }
 
   stages {
     //   stage('StaticAnalysis') {   //without qg set 
@@ -78,6 +88,15 @@ pipeline {
   //            )
   //        }
   //     }
+
+   stage('Push Docker Image To DockerHub') {
+        steps {
+            withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
+              sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
+                }
+                 sh 'docker push ${REGISTRY}:${VERSION}'
+              }
+          }
     // success {
 
     // }
