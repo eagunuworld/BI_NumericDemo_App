@@ -119,7 +119,7 @@ stage('KubernetesVulnerability Scanning') {
         }
       }
 
-stage('KubernetesVulnerability Scanning') {  
+stage('RemovingResources') {  
       steps {
          parallel(
                "KillRunningProcesses": {
