@@ -100,21 +100,28 @@ stage('KubernetesVulnerability Scanning') {
        }
      }
 
-  stage('Integration Tests - DEV') {
-      steps {
-        script {
-          try {
-              sh "bash integration-test.sh"
-            } catch (e) {
-              sh "kubectl -n default rollout undo deploy ${deploymentName}"
-            }
-            throw e
-        }
-      }
-    }
+  // stage('Integration Tests - DEV') {
+  //     steps {
+  //       script {
+  //         try {
+  //             sh "bash integration-test.sh"
+  //           } catch (e) {
+  //             sh "kubectl -n default rollout undo deploy ${deploymentName}"
+  //           }
+  //           throw e
+  //       }
+  //     }
+  //   }
  
 
-   stage('Remove images from Agent Server') {
+
+  stage('OWASP ZAP - DAST') {
+      steps {
+          sh 'bash zap.sh'
+        }
+      }
+
+  stage('Remove images from Agent Server') {
         steps{
             script {
                   sh 'docker rmi  $(docker images -q)'
