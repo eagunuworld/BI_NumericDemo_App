@@ -11,6 +11,7 @@ echo $serverURL:$PORT/$appURI
 response=$(curl -s $serverURL:$PORT/$appURI)
 echo $response
 http_code=$(curl -s -o /dev/null -w "%{http_code}" $serverURL:$PORT/$appURI)
+echo $http_code
 
 if [[ ! -z "$PORT" ]];
 then
