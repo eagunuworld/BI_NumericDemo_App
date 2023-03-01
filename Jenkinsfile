@@ -27,7 +27,7 @@ pipeline {
             //def mavenCMD = "${mavenHome}/usr/share/maven"
             VERSION = "${env.BUILD_ID}"
             REGISTRY = 'eagunuworld/numeric-app'
-            imageName = eagunuworld/numeric-app:${VERSION}
+            imageName = '${REGISTRY}:${VERSION}'
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
           }
 
