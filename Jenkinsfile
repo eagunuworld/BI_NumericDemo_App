@@ -77,6 +77,25 @@ pipeline {
               }
           }
 
+stage('KubernetesVulnerability Scanning') {  
+      steps {
+         parallel(
+               "Docker Images": {
+                    sh "docker images" 
+                  },
+                  "ScanningDeploymentFile": {
+                      sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego deployment-svc.yaml" 
+                   },
+                   "DisplayContent": {
+                    sh "ls -lart"
+                   },
+                 "DisplayContainers": {
+                  sh 'docker ps -a'
+                }
+             )
+         }
+      }
+
     stage('KubernetesDeployment') {
       steps {
           sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' deployment-svc.yaml"
