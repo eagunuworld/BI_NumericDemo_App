@@ -29,16 +29,12 @@ pipeline {
             REGISTRY = 'eagunuworld/numeric-app'
             imageName = "eagunuworld/numeric-app:${BUILD_ID}"
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
+            deploymentName = "demo-pod"
+            conName = "demo-con"
+            svcName = "demo-svc"
+            serverURL = "34.174.248.94"
+            appURI = "/increment/99"
           }
-
-  //  environment {
-  //   deploymentName = "demo-pod"
-  //   containerName = "demo-con"
-  //   serviceName = "demo-svc"
-  //   imageName = "eagunuworld/numeric-app:${GIT_COMMIT}"
-  //   applicationURL = "34.174.241.37"
-  //   applicationURI = "increment/100"
-  // }
 
   stages {
     stage('Build Artifact - Maven') {
@@ -57,8 +53,8 @@ pipeline {
                   "Dependency Check": {
                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
                    },
-                   "unkown": {
-                    sh "ls -lart"
+                   "TrivyImage": {
+                    sh "sudo rm -rf trivy"
                    },
                  "OPA Conftest": {
                   sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
@@ -103,6 +99,20 @@ stage('KubernetesVulnerability Scanning') {
           sh "kubectl apply -f deployment-svc.yaml"
        }
      }
+
+  stage('Integration Tests - DEV') {
+      steps {
+        script {
+          try {
+              sh "bash integration-test.sh"
+            } catch (e) {
+              sh "kubectl -n default rollout undo deploy ${deploymentName}"
+            }
+            throw e
+        }
+      }
+    }
+ 
 
    stage('Remove images from Agent Server') {
         steps{
