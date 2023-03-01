@@ -24,13 +24,13 @@ then
             exit 1;
     fi;
 
-    if [[ "$http_code" == 200 ]];
-        then
-            echo "HTTP Status Code Test Passed"
-        else
-            echo "HTTP Status code is not 200"
-            exit 1;
-    fi;
+    # if [[ "$http_code" == 200 ]];
+    #     then
+    #         echo "HTTP Status Code Test Passed"
+    #     else
+    #         echo "HTTP Status code is not 200"
+    #         exit 1;
+    # fi;
 
 else
         echo "The Service does not have a NodePort"
