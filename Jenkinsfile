@@ -89,10 +89,19 @@ pipeline {
   //        }
   //     }
 
+  // stage('Building Docker Images') {
+  //               steps {
+  //                 sh "sudo chmod 666 /var/run/docker.sock"
+  //                 sh "docker build -t ${REGISTRY}:${VERSION} ."
+  //                    }
+  //                }
+
    stage('Push Docker Image To DockerHub') {
         steps {
             withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
               sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
+              sh 'printenv'
+              sh 'docker build -t ${REGISTRY}:${VERSION} .'
                 }
                  sh 'docker push ${REGISTRY}:${VERSION}'
               }
