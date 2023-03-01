@@ -33,7 +33,7 @@ pipeline {
             conName = "demo-con"
             svcName = "demo-svc"
             serverURL = "34.174.248.94"
-            appURI = "/increment/99"
+            appURI = "increment/99"
           }
 
   stages {
