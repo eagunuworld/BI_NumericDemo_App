@@ -63,31 +63,31 @@ pipeline {
       }
     }
 
- stage('Vulnerability Scan - Docker ') {
+//  stage('Vulnerability Scan - Docker ') {
+//       steps {
+//         sh "mvn dependency-check:check"
+//       }
+//       post {
+//         always {
+//           dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+//         }
+//       }
+//     }
+   stage('Vulnerability Scan') {        //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
       steps {
-        sh "mvn dependency-check:check"
+         parallel(
+               "Mutation Test PIT": {
+                    sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
+                  },
+                  "Dependency Check": {
+                      sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+                   }
+              //    "OPA Conftest": {
+              //     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+              //  }
+             )
+         }
       }
-      post {
-        always {
-          dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
-        }
-      }
-    }
-  //  stage('Mutation Tests - PIT') {      NO      //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
-  //     steps {
-  //        parallel(
-  //              "Mutation Test PIT": {
-  //                   sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
-  //                 },
-  //                 "Dependency Check": {
-  //                     sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
-  //                 },
-  //                "OPA Conftest": {
-  //                 sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
-  //              }
-  //            )
-  //        }
-  //     }
 
   // stage('Building Docker Images') {
   //               steps {
@@ -106,6 +106,22 @@ pipeline {
                  sh 'docker push ${REGISTRY}:${VERSION}'
               }
           }
+
+   stage('Remove images from Agent Server') {
+        steps{
+            script {
+                  sh 'docker rmi  $(docker images -q)'
+                  }
+                }
+            }
+      post {
+        always {
+        // junit 'target/surefire-reports/*.xml'
+        // jacoco execPattern: 'target/jacoco.exec'
+        pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+        dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+        // publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
+       }
     // success {
 
     // }
