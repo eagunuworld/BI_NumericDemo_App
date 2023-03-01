@@ -81,6 +81,9 @@ pipeline {
                   },
                   "Dependency Check": {
                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+                   },
+                   "listing all the files": {
+                    sh "ls -lart"
                    }
               //    "OPA Conftest": {
               //     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
