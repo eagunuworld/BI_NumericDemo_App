@@ -30,21 +30,21 @@ pipeline {
   }
 
   stages {
-      stage('StaticAnalysis') {   //without qg set 
-       steps {
-         parallel(
-               "StaticCodesAnalysis": {
-                 sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.248.94:9000 -Dsonar.login=sqp_c13dc0b55ee2d6771fcc1167db2d866ddc7c1b26"
-              },
-              "No Tasks": {
-             sh "ls -lart"
-            },
-           "checkingFile": {
-            sh "ls -lart"
-            }
-          )
-       }
-     }
+    //   stage('StaticAnalysis') {   //without qg set 
+    //    steps {
+    //      parallel(
+    //            "StaticCodesAnalysis": {
+    //              sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.248.94:9000 -Dsonar.login=sqp_c13dc0b55ee2d6771fcc1167db2d866ddc7c1b26"
+    //           },
+    //           "No Tasks": {
+    //          sh "ls -lart"
+    //         },
+    //        "checkingFile": {
+    //         sh "ls -lart"
+    //         }
+    //       )
+    //    }
+    //  }
 
     stage('Build Artifact - Maven') {
       steps {
