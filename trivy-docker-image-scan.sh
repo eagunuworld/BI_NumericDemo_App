@@ -1,5 +1,4 @@
 ## trivy-docker-image-scan.sh
-
 #!/bin/bash
 
 dockerimage=$(awk 'NR==1 {print $2}' Dockerfile)
@@ -8,20 +7,21 @@ echo $dockerimage
 docker run --rm -v $workspace:/root/.cache/ aquasec/trivy:0.17.2 -q image --exit-code 0 --severity HIGH --light $dockerimage
 docker run --rm -v $workspace:/root/.cache/ aquasec/trivy:0.17.2 -q image --exit-code 1 --severity CRITICAL --light $dockerimage
 
-    # Trivy scan result processing
-    exit_code=$?
-    echo "Exit Code : $exit_code"
+# Trivy scan result processing
+exit_code=$?
+echo "Exit Code : $exit_code"
 
-    # Check scan results
-    if [[ "${exit_code}" == 1 ]]; then
-        echo "Image scanning failed. Vulnerabilities found"
-        exit 1;
-    else
-        echo "Image scanning passed. No CRITICAL vulnerabilities found"
-    fi;
+# Check scan results
+if [[ "${exit_code}" == 1 ]]; then
+    echo "Image scanning failed. Vulnerabilities found"
+    exit 1;
+else
+    echo "Image scanning passed. No CRITICAL vulnerabilities found"
+fi;
 
 
 ##############Testing this script from terminal, workspace there is dockerfile, this failed python:3.4-alpine
+#image to fail the build  openjdk:8-jdk-alpine
 # user@kubeadm-master:~/workspace/devsecops-playstation/devsecop-dev$
 # dockerimage=$(awk 'NR==1 {print $2}' Dockerfile)
 # echo $dockerimage

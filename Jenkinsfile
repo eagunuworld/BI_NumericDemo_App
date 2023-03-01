@@ -40,22 +40,6 @@ pipeline {
   // }
 
   stages {
-    //   stage('StaticAnalysis') {   //without qg set 
-    //    steps {
-    //      parallel(
-    //            "StaticCodesAnalysis": {
-    //              sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number -Dsonar.host.url=http://34.174.248.94:9000 -Dsonar.login=sqp_c13dc0b55ee2d6771fcc1167db2d866ddc7c1b26"
-    //           },
-    //           "No Tasks": {
-    //          sh "ls -lart"
-    //         },
-    //        "checkingFile": {
-    //         sh "ls -lart"
-    //         }
-    //       )
-    //    }
-    //  }
-
     stage('Build Artifact - Maven') {
       steps {
         sh "mvn clean package -DskipTests=true"
@@ -63,16 +47,6 @@ pipeline {
       }
     }
 
-//  stage('Vulnerability Scan - Docker ') {
-//       steps {
-//         sh "mvn dependency-check:check"
-//       }
-//       post {
-//         always {
-//           dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
-//         }
-//       }
-//     }
    stage('Vulnerability Scan') {        //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
       steps {
          parallel(
@@ -82,8 +56,8 @@ pipeline {
                   "Dependency Check": {
                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
                    },
-                   "listing all the files": {
-                    sh "ls -lart"
+                   "Trivy Scan": {
+                    sh "bash trivy-docker-image-scan.sh"
                    }
               //    "OPA Conftest": {
               //     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
@@ -91,13 +65,6 @@ pipeline {
              )
          }
       }
-
-  // stage('Building Docker Images') {
-  //               steps {
-  //                 sh "sudo chmod 666 /var/run/docker.sock"
-  //                 sh "docker build -t ${REGISTRY}:${VERSION} ."
-  //                    }
-  //                }
 
    stage('Push Docker Image To DockerHub') {
         steps {
@@ -110,7 +77,7 @@ pipeline {
               }
           }
 
-    stage('Kubernetes Deployment - DEV') {
+    stage('KubernetesDeployment') {
       steps {
           sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' deployment-svc.yaml"
           sh "cat deployment-svc.yaml"
