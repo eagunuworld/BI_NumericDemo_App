@@ -80,8 +80,8 @@ pipeline {
 stage('KubernetesVulnerability Scanning') {  
       steps {
          parallel(
-               "Docker Images": {
-                    sh "docker images" 
+               "ScanningImage": {
+                    sh "bash trivy-k8s-scan.sh" 
                   },
                   "ScanningDeploymentFile": {
                     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego deployment-svc.yaml'
