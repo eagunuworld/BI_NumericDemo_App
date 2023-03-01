@@ -92,7 +92,7 @@ stage('KubernetesVulnerability Scanning') {
          }
       }
 
-    stage('KubernetesDeployment') {
+    stage('ProdDeploy') {
       steps {
           sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' deployment-svc.yaml"
           sh "cat deployment-svc.yaml"
@@ -119,13 +119,13 @@ stage('KubernetesVulnerability Scanning') {
         }
       }
 
-stage('RemovingResources') {  
+stage('RemoveResources') {  
       steps {
          parallel(
-               "KillRunningProcesses": {
+               "KillProcesses": {
                     sh "docker ps -aq | xargs docker rm -f" 
                   },
-                 "kubesecScannning": {
+                 "RemoveDockerImages": {
                   sh 'docker rmi  $(docker images -q)'
                 }
              )
