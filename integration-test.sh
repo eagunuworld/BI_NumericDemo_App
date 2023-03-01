@@ -8,7 +8,8 @@ PORT=$(kubectl -n default get svc ${svcName} -o json | jq .spec.ports[].nodePort
 
 echo $PORT
 echo $serverURL:$PORT/$appURI
-response=$(curl -s $serverURL:$PORT$appURI)
+response=$(curl -s $serverURL:$PORT/$appURI)
+echo $response
 http_code=$(curl -s -o /dev/null -w "%{http_code}" $serverURL:$PORT$appURI)
 
 if [[ ! -z "$PORT" ]];
