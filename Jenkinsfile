@@ -113,21 +113,31 @@ stage('KubernetesVulnerability Scanning') {
   //     }
   //   }
  
-
-
   stage('OWASP ZAP - DAST') {
       steps {
           sh 'bash zap.sh'
         }
       }
 
-  stage('Remove images from Agent Server') {
-        steps{
-            script {
+stage('KubernetesVulnerability Scanning') {  
+      steps {
+         parallel(
+               "KillRunningProcesses": {
+                    sh "docker ps -aq | xargs docker rm -f" 
+                  },
+                 "kubesecScannning": {
                   sh 'docker rmi  $(docker images -q)'
-                  }
                 }
-            }
+             )
+         }
+      }
+  // stage('Remove images from Agent Server') {
+  //       steps{
+  //           script {
+  //                 sh 'docker rmi  $(docker images -q)'
+  //                 }
+  //               }
+  //           }
     }
   post {
         always {
