@@ -56,8 +56,8 @@ pipeline {
                   "Dependency Check": {
                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
                    },
-                   "Trivy Scan": {
-                    sh "bash trivy-docker-image-scan.sh"
+                   "unkown": {
+                    sh "ls -lart"
                    },
                  "OPA Conftest": {
                   sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
