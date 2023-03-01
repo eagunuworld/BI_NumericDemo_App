@@ -107,6 +107,14 @@ pipeline {
               }
           }
 
+    stage('Kubernetes Deployment - DEV') {
+      steps {
+          sh "sed -i 's#replace#siddharth67/numeric-app:${VERSION}#g' deployment-svc.yaml"
+          sh "cat deployment-svc.yaml"
+          sh "kubectl apply -f deployment-svc.yaml"
+       }
+     }
+
    stage('Remove images from Agent Server') {
         steps{
             script {
