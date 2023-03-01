@@ -40,14 +40,6 @@ pipeline {
   // }
 
   stages {
-
-    stage('Remove images from Agent') {
-        steps{
-            script {
-                  sh 'docker rmi  $(docker images -q)'
-                  }
-                }
-            }
     stage('Build Artifact - Maven') {
       steps {
         sh "mvn clean package -DskipTests=true"
