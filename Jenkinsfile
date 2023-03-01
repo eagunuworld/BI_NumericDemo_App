@@ -89,8 +89,8 @@ stage('KubernetesVulnerability Scanning') {
                    "DisplayContent": {
                     sh "ls -lart"
                    },
-                 "DisplayContainers": {
-                  sh 'docker ps -a'
+                 "kubesec Scannning": {
+                  sh 'bash kubesec-scan.sh'
                 }
              )
          }
