@@ -84,7 +84,7 @@ stage('KubernetesVulnerability Scanning') {
                     sh "docker images" 
                   },
                   "ScanningDeploymentFile": {
-                      sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego deployment-svc.yaml" 
+                      sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego deployment-svc.yaml" 
                    },
                    "DisplayContent": {
                     sh "ls -lart"
