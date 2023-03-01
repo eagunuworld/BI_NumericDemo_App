@@ -10,7 +10,7 @@ echo $PORT
 echo $serverURL:$PORT/$appURI
 response=$(curl -s $serverURL:$PORT/$appURI)
 echo $response
-http_code=$(curl -s -o /dev/null -w "%{http_code}" $serverURL:$PORT$appURI)
+http_code=$(curl -s -o /dev/null -w "%{http_code}" $serverURL:$PORT/$appURI)
 
 if [[ ! -z "$PORT" ]];
 then
