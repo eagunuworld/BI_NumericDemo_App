@@ -93,6 +93,26 @@ stage('KubernetesVulnerability Scanning') {
          }
       }
 
+    stage('K8S CIS Benchmark') {
+      steps {
+        script {
+
+          parallel(
+            "Master": {
+              sh "bash cis-benchmark-master.sh"
+            },
+            "Etcd": {
+              sh "bash cis-benchmark-etcd.sh"
+            },
+            "Kubelet": {
+              sh "bash cis-benchMark-kubelet.sh"
+            }
+          )
+
+        }
+      }
+    }
+
     stage('ProdDeploy') {
       steps {
           sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' deployment-svc.yaml"
