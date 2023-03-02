@@ -113,6 +113,14 @@ stage('KubernetesVulnerability Scanning') {
       }
     }
 
+  stage('Prompte to PROD?') {
+      steps {
+        timeout(time: 2, unit: 'DAYS') {
+          input 'Do you want to Approve the Deployment to Production Environment/Namespace?'
+        }
+      }
+    }
+
     stage('ProdDeploy') {
       steps {
           sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' deployment-svc.yaml"
