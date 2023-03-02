@@ -1,7 +1,7 @@
 #!/bin/bash
 #cis-master.sh
 
-total_fail=$(kube-bench --version 1.26 --check 1.1.1,1.1.16,1.2.12 --json | jq '.Totals.total_fail')
+total_fail=$(sudo kube-bench --version 1.26 --check 1.1.1,1.1.16,1.2.12 --json | jq '.Totals.total_fail')
 
 if [[ "$total_fail" -ne 0 ]];
         then
