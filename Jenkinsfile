@@ -33,7 +33,7 @@ pipeline {
             deploymentName = "demo-pod"
             conName = "demo-con"
             svcName = "demo-svc"
-            serverURL = "34.174.248.94"
+            serverURL = "34.174.121.116"
             appURI = "increment/99"
           }
 
