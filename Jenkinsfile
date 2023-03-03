@@ -38,165 +38,172 @@ pipeline {
           }
 
   stages {
-    stage('Build Artifact - Maven') {
-      steps {
-        sh "mvn clean package -DskipTests=true"
-        archiveArtifacts 'target/*.jar'
-      }
-    }
+//     stage('Build Artifact - Maven') {
+//       steps {
+//         sh "mvn clean package -DskipTests=true"
+//         archiveArtifacts 'target/*.jar'
+//       }
+//     }
 
-   stage('CodeDockerVulnerability Scanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
-      steps {
-         parallel(
-               "Mutation Test PIT": {
-                    sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
-                  },
-                  "Dependency Check": {
-                      sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
-                   },
-                   "TrivyImage": {
-                    sh "sudo rm -rf trivy"
-                   },
-                 "OPA Conftest": {
-                  sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
-                }
-             )
-         }
-      }
+//    stage('CodeDockerVulnerability Scanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+//       steps {
+//          parallel(
+//                "Mutation Test PIT": {
+//                     sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
+//                   },
+//                   "Dependency Check": {
+//                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+//                    },
+//                    "TrivyImage": {
+//                     sh "sudo rm -rf trivy"
+//                    },
+//                  "OPA Conftest": {
+//                   sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+//                 }
+//              )
+//          }
+//       }
 
-   stage('Push Docker Image To DockerHub') {
-        steps {
-            withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
-              sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
-              sh 'docker build -t ${REGISTRY}:${VERSION} .'
-                }
-                 sh 'docker push ${REGISTRY}:${VERSION}'
-              }
-          }
+//    stage('Push Docker Image To DockerHub') {
+//         steps {
+//             withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
+//               sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
+//               sh 'docker build -t ${REGISTRY}:${VERSION} .'
+//                 }
+//                  sh 'docker push ${REGISTRY}:${VERSION}'
+//               }
+//           }
 
-stage('KubernetesVulnerability Scanning') {  
-      steps {
-         parallel(
-               "ScanningImage": {
-                    sh "bash trivy-k8s-scan.sh" 
-                  },
-                  "ScanningDeploymentFile": {
-                    sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego west-prod-deploy.yml'
-                   },
-                   "printingEnv": {
-                    sh "printenv "
-                   },
-                 "kubesec Scannning": {
-                  sh 'bash kubesec-scan.sh'
-                }
-             )
-         }
-      }
+// stage('KubernetesVulnerability Scanning') {  
+//       steps {
+//          parallel(
+//                "ScanningImage": {
+//                     sh "bash trivy-k8s-scan.sh" 
+//                   },
+//                   "ScanningDeploymentFile": {
+//                     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego west-prod-deploy.yml'
+//                    },
+//                    "printingEnv": {
+//                     sh "printenv "
+//                    },
+//                  "kubesec Scannning": {
+//                   sh 'bash kubesec-scan.sh'
+//                 }
+//              )
+//          }
+//       }
 
-    stage('K8S CIS Benchmark') {
-      steps {
-        script {
+//     stage('K8S CIS Benchmark') {
+//       steps {
+//         script {
 
-          parallel(
-            "Master": {
-              sh "bash cis-benchmark-master.sh"
-            },
-            "Etcd": {
-              sh "bash cis-benchmark-etcd.sh"
-            },
-            "Kubelet": {
-              sh "bash cis-benchMark-kubelet.sh"
-            }
-          )
+//           parallel(
+//             "Master": {
+//               sh "bash cis-benchmark-master.sh"
+//             },
+//             "Etcd": {
+//               sh "bash cis-benchmark-etcd.sh"
+//             },
+//             "Kubelet": {
+//               sh "bash cis-benchMark-kubelet.sh"
+//             }
+//           )
 
-        }
-      }
-    }
+//         }
+//       }
+//     }
 
    
-  stage('north-mpm-deploy') {
-      steps {
-        parallel(
-          "Deployment": {
-              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-deploy.yaml"
-              sh "kubectl -n prod apply -f north-mpm-deploy.yaml"
-            },
-          "Rollout North Status": {
-              sh "bash north-mpm-rollout.sh"
-          }
-        )
-      }
-    }
+//   stage('north-mpm-deploy') {
+//       steps {
+//         parallel(
+//           "Deployment": {
+//               sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-deploy.yaml"
+//               sh "kubectl -n prod apply -f north-mpm-deploy.yaml"
+//             },
+//           "Rollout North Status": {
+//               sh "bash north-mpm-rollout.sh"
+//           }
+//         )
+//       }
+//     }
 
- stage('West-Prod?') {
-      steps {
-        timeout(time: 2, unit: 'DAYS') {
-          input 'Do you want to Approve the Deployment to West Production Environment/Namespace?'
-        }
-      }
-    }
+//  stage('West-Prod?') {
+//       steps {
+//         timeout(time: 2, unit: 'DAYS') {
+//           input 'Do you want to Approve the Deployment to West Production Environment/Namespace?'
+//         }
+//       }
+//     }
 
- stage('west-prod') {
-      steps {
-        parallel(
-          "Deployment": {
-              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-deploy.yml"
-              sh "kubectl -n prod apply -f west-prod-deploy.yml"
-            },
-          "Rollout West Status": {
-              sh "bash west-prod-rollout.sh"
-          }
-        )
-      }
-    }
-  // stage('Integration Tests - DEV') {
-  //     steps {
-  //       script {
-  //         try {
-  //             sh "bash integration-test.sh"
-  //           } catch (e) {
-  //             sh "kubectl -n default rollout undo deploy ${deploymentName}"
-  //           }
-  //           throw e
-  //       }
-  //     }
-  //   }
+//  stage('west-prod') {
+//       steps {
+//         parallel(
+//           "Deployment": {
+//               sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-deploy.yml"
+//               sh "kubectl -n prod apply -f west-prod-deploy.yml"
+//             },
+//           "Rollout West Status": {
+//               sh "bash west-prod-rollout.sh"
+//           }
+//         )
+//       }
+//     }
+//   // stage('Integration Tests - DEV') {
+//   //     steps {
+//   //       script {
+//   //         try {
+//   //             sh "bash integration-test.sh"
+//   //           } catch (e) {
+//   //             sh "kubectl -n default rollout undo deploy ${deploymentName}"
+//   //           }
+//   //           throw e
+//   //       }
+//   //     }
+//   //   }
  
-  stage('OWASP ZAP - DAST') {
-      steps {
-          sh 'bash zap.sh'
-        }
-      }
+//   stage('OWASP ZAP - DAST') {
+//       steps {
+//           sh 'bash zap.sh'
+//         }
+//       }
 
-stage('RemoveResources') {  
+// stage('RemoveResources') {  
+//       steps {
+//          parallel(
+//                "KillProcesses": {
+//                     sh "docker ps -aq | xargs docker rm -f" 
+//                   },
+//                  "RemoveDockerImages": {
+//                   sh 'docker rmi  $(docker images -q)'
+//                 }
+//              )
+//          }
+//       }
+    stage('Testing Slack') {
       steps {
-         parallel(
-               "KillProcesses": {
-                    sh "docker ps -aq | xargs docker rm -f" 
-                  },
-                 "RemoveDockerImages": {
-                  sh 'docker rmi  $(docker images -q)'
-                }
-             )
-         }
+        sh 'exit 0'
       }
-  // stage('Remove images from Agent Server') {
-  //       steps{
-  //           script {
-  //                 sh 'docker rmi  $(docker images -q)'
-  //                 }
-  //               }
-  //           }
+    }
+ 
     }
   post {
-        always {
-        // junit 'target/surefire-reports/*.xml'
-        // jacoco execPattern: 'target/jacoco.exec'
-        pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-        dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
-        publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
-        // Use sendNotifications.groovy from shared library and provide current build result as parameter    
-       sendNotification currentBuild.result
-       }
+      //   always {
+      //   // junit 'target/surefire-reports/*.xml'
+      //   // jacoco execPattern: 'target/jacoco.exec'
+      //   pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+      //   dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+      //   publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
+      //   // Use sendNotifications.groovy from shared library and provide current build result as parameter    
+      //  sendNotification currentBuild.result
+      //  }
+      success {
+      script {
+        /* Use slackNotifier.groovy from shared library and provide current build result as parameter */
+        env.failedStage = "none"
+        env.emoji = ":white_check_mark: :tada: :thumbsup_all:"
+        sendNotification currentBuild.result
+      }
+    }
   }
 }
