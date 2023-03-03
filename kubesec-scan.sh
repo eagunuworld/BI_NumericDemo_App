@@ -1,8 +1,8 @@
 #!/bin/bash
 
-scan_result=$(curl -sSX POST --data-binary @"deployment-svc.yaml" https://v2.kubesec.io/scan)
-scan_message=$(curl -sSX POST --data-binary @"deployment-svc.yaml" https://v2.kubesec.io/scan | jq .[0].message -r ) 
-scan_score=$(curl -sSX POST --data-binary @"deployment-svc.yaml" https://v2.kubesec.io/scan | jq .[0].score ) 
+scan_result=$(curl -sSX POST --data-binary @"west-prod-deploy.yml" https://v2.kubesec.io/scan)
+scan_message=$(curl -sSX POST --data-binary @"west-prod-deploy.yml" https://v2.kubesec.io/scan | jq .[0].message -r ) 
+scan_score=$(curl -sSX POST --data-binary @"west-prod-deploy.yml" https://v2.kubesec.io/scan | jq .[0].score ) 
 
 if [[ "${scan_score}" -ge 4 ]]; then
 	echo "Score is $scan_score"
