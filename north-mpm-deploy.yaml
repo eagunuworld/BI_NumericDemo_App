@@ -36,7 +36,7 @@ spec:
   - port: 8080
     protocol: TCP
     targetPort: 8080
-    nodePort: 30000
+    nodePort: 30002
   selector:
     app: demo-svc
   type: NodePort
