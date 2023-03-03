@@ -118,8 +118,8 @@ stage('KubernetesVulnerability Scanning') {
       steps {
         parallel(
           "Deployment": {
-              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-deploy.yam"
-              sh "kubectl -n prod apply -f north-mpm-deploy.yam"
+              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-deploy.yaml"
+              sh "kubectl -n prod apply -f north-mpm-deploy.yaml"
             },
           "Rollout North Status": {
               sh "bash north-mpm-rollout.sh"
