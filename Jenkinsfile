@@ -113,21 +113,20 @@ stage('KubernetesVulnerability Scanning') {
       }
     }
 
-  stage('East PROD?') {
+   
+  stage('north-mpm-deploy') {
       steps {
-        timeout(time: 2, unit: 'DAYS') {
-          input 'Do you want to Approve the Deployment to East Production Environment/Namespace?'
-        }
+        parallel(
+          "Deployment": {
+              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-deploy.yam"
+              sh "kubectl -n prod apply -f north-mpm-deploy.yam"
+            },
+          "Rollout North Status": {
+              sh "bash north-mpm-rollout.sh"
+          }
+        )
       }
     }
-
-    stage('ProdDeploy') {
-      steps {
-          sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' deployment-svc.yaml"
-          sh "cat deployment-svc.yaml"
-          sh "kubectl apply -f deployment-svc.yaml"
-       }
-     }
 
  stage('West-Prod?') {
       steps {
@@ -144,8 +143,8 @@ stage('KubernetesVulnerability Scanning') {
               sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-deploy.yml"
               sh "kubectl -n prod apply -f west-prod-deploy.yml"
             },
-          "Rollout Status": {
-              sh "bash west-prod-rollout.yml"
+          "Rollout West Status": {
+              sh "bash west-prod-rollout.sh"
           }
         )
       }

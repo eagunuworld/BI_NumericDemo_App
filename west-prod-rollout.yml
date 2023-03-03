@@ -8,5 +8,5 @@ then
     kubectl -n prod rollout undo deploy ${deploymentName}
     exit 1;
 else
-	echo "Deployment ${deploymentName} Rollout is Success"
+	echo "Deployment ${deploymentName} Rollout in west is Success"
 fi
