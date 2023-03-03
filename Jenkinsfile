@@ -202,7 +202,7 @@ pipeline {
         /* Use slackNotifier.groovy from shared library and provide current build result as parameter */
         env.failedStage = "none"
         env.emoji = ":white_check_mark: :tada: :thumbsup_all:"
-        //vars/demonotification currentBuild.result
+        slacksharedlibrary currentBuild.result
       }
     }
   }
