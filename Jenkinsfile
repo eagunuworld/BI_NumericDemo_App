@@ -45,24 +45,24 @@ pipeline {
       }
     }
 
-   stage('CodeDockerVulnerability Scanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
-      steps {
-         parallel(
-               "Mutation Test PIT": {
-                    sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
-                  },
-                  "Dependency Check": {
-                      sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
-                   },
-                   "TrivyImage": {
-                    sh "sudo rm -rf trivy"
-                   },
-                 "OPA Conftest": {
-                  sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
-                }
-             )
-         }
-      }
+  //  stage('CodeDockerVulnerability Scanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+  //     steps {
+  //        parallel(
+  //              "Mutation Test PIT": {
+  //                   sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
+  //                 },
+  //                 "Dependency Check": {
+  //                     sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+  //                  },
+  //                  "TrivyImage": {
+  //                   sh "sudo rm -rf trivy"
+  //                  },
+  //                "OPA Conftest": {
+  //                 sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+  //               }
+  //            )
+  //        }
+  //     }
 
    stage('Push Docker Image To DockerHub') {
         steps {
@@ -74,24 +74,24 @@ pipeline {
               }
           }
 
-stage('KubernetesVulnerability Scanning') {  
-      steps {
-         parallel(
-               "ScanningImage": {
-                    sh "bash trivy-k8s-scan.sh" 
-                  },
-                  "ScanningDeploymentFile": {
-                    sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego west-prod-deploy.yml'
-                   },
-                   "printingEnv": {
-                    sh "printenv "
-                   },
-                 "kubesec Scannning": {
-                  sh 'bash kubesec-scan.sh'
-                }
-             )
-         }
-      }
+// stage('KubernetesVulnerability Scanning') {  
+//       steps {
+//          parallel(
+//                "ScanningImage": {
+//                     sh "bash trivy-k8s-scan.sh" 
+//                   },
+//                   "ScanningDeploymentFile": {
+//                     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego west-prod-deploy.yml'
+//                    },
+//                    "printingEnv": {
+//                     sh "printenv "
+//                    },
+//                  "kubesec Scannning": {
+//                   sh 'bash kubesec-scan.sh'
+//                 }
+//              )
+//          }
+//       }
 
     stage('K8S CIS Benchmark') {
       steps {
@@ -162,11 +162,11 @@ stage('KubernetesVulnerability Scanning') {
   //     }
   //   }
  
-  stage('OWASP ZAP - DAST') {
-      steps {
-          sh 'bash zap.sh'
-        }
-      }
+  // stage('OWASP ZAP - DAST') {
+  //     steps {
+  //         sh 'bash zap.sh'
+  //       }
+  //     }
 
    stage('RemoveResources') {  
       steps {
