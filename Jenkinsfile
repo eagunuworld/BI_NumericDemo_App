@@ -38,6 +38,19 @@ pipeline {
           }
 
   stages {
+    stage('RemoveResources') {  
+      steps {
+         parallel(
+               "KillProcesses": {
+                    sh "docker ps -aq | xargs docker rm -f" 
+                  },
+                 "RemoveDockerImages": {
+                  sh 'docker rmi  $(docker images -q)'
+                }
+             )
+         }
+      }
+
     stage('Build Artifact - Maven') {
       steps {
         sh "mvn clean package -DskipTests=true"
@@ -167,20 +180,6 @@ stage('KubernetesVulnerability Scanning') {
           sh 'bash zap.sh'
         }
       }
-
-stage('RemoveResources') {  
-      steps {
-         parallel(
-               "KillProcesses": {
-                    sh "docker ps -aq | xargs docker rm -f" 
-                  },
-                 "RemoveDockerImages": {
-                  sh 'docker rmi  $(docker images -q)'
-                }
-             )
-         }
-      }
-
     }
   post {
         always {
