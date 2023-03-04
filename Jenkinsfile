@@ -1,4 +1,4 @@
-@Library('mss-sharedlibrary')_
+@Library('mss-sharedlibrary') _
 pipeline {
   //agent any
   //kubectl -n default create deploy node-app --image siddharth67/node-service:v1
