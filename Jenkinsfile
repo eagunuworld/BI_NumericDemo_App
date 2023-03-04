@@ -1,4 +1,4 @@
-@Library('mss-sharedlibrary') _
+@Library('mss-sharedlibrary')_
 pipeline {
   //agent any
   //kubectl -n default create deploy node-app --image siddharth67/node-service:v1
@@ -191,14 +191,14 @@ stage('KubernetesVulnerability Scanning') {
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
         // Use sendNotifications.groovy from shared library and provide current build result as parameter   
         //slacksharedlibrary currentBuild.result 
-       //sendNotification currentBuild.result
+       slacksharedlibrary currentBuild.result
        }
       success {
       script {
         /* Use slackNotifier.groovy from shared library and provide current build result as parameter */
         env.failedStage = "none"
         env.emoji = ":white_check_mark: :tada: :thumbsup_all:"
-        slacksharedlibrary currentBuild.result
+        slacksharedlibrary (currentBuild.result)
       }
     }
   }
