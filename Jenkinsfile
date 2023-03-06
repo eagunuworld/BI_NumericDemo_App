@@ -128,7 +128,7 @@ pipeline {
       }
     }
 
- stage('West-Prod?') {
+ stage('Approve West-Prod?') {
       steps {
         timeout(time: 2, unit: 'DAYS') {
           input 'Do you want to Approve the Deployment to West Production Environment/Namespace?'
