@@ -171,3 +171,22 @@ def call(String buildStatus = 'STARTED') {
 
  slackSend(color: color, message: msg)
 }
+###############################################
+files:write
+Upload, edit, and delete files as App-bot-slack-notifications
+
+chat:write
+Send messages as App-bot-slack-notifications
+
+chat:write.customize
+Send messages as App-bot-slack-notifications with a customized username and avatar
+
+emoji:read
+View custom emoji in a workspace
+
+reactions:read
+View emoji reactions and their associated content in channels and conversations that App-bot-slack-notifications has been added to
+
+reactions:write
+Add and edit emoji reactions
+
