@@ -73,3 +73,11 @@ stage('snykSecurity') {
       )
     }
   }
+
+
+most of the organization scan contaners ant patch them accordily
+when you run kube-bench 
+before you create a pod from a manifest there is a need to run static analysis 
+to determine if the manifest meet the standard or not
+
+there is alot of misconfiguration from the docker file is also advisable to run docker scanning on the manifest file

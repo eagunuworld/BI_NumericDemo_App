@@ -191,14 +191,14 @@ pipeline {
         // publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
         // Use sendNotifications.groovy from shared library and provide current build result as parameter   
         //slacksharedlibrary currentBuild.result 
-       slackcodenotifications currentBuild.result
+       slacksharedlibrary currentBuild.result
        }
       success {
       script {
-        /* Use slackNotifier.groovy from shared library and provide current build result as parameter */
+        /* Use slackNotifier.groovy from shared library and provide current build result as parameter */  
         env.failedStage = "none"
         env.emoji = ":white_check_mark: :tada: :thumbsup_all:"
-        slackcodenotifications (currentBuild.result)
+        slacksharedlibrary currentBuild.result
       }
     }
   }
