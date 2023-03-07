@@ -191,7 +191,7 @@ pipeline {
         // publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
         // Use sendNotifications.groovy from shared library and provide current build result as parameter   
         //slacksharedlibrary currentBuild.result 
-       sendNotification currentBuild.result
+       //sendNotification currentBuild.result
        }
       success {
       script {
