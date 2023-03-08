@@ -33,7 +33,7 @@ pipeline {
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
             def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'master']], userRemoteConfigs: [[url: 'https://github.com/eagunuworld/OI_GameSnake_App.git']]])
             scmVarsg = "${scmVars.GIT_COMMIT}"
-            GIT_BRANCH = ${scmVars.GIT_BRANCH }
+            GIT_BRANCH = "${scmVars.GIT_BRANCH}"
             deploymentName = "demo-pod"
             conName = "demo-con"
             svcName = "demo-svc"
