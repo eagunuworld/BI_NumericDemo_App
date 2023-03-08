@@ -83,6 +83,24 @@ def call(String buildStatus = 'STARTED') {
             "image_url": "https://raw.githubusercontent.com/sidd-harth/kubernetes-devops-security/main/slack-emojis/k8s.png",
             "alt_text": "Kubernetes Icon"
           ],
+        ],
+        [
+          "type": "section",
+          "text": [
+              "type": "mrkdwn",
+              "text": "*Kubernetes Node: * `controlplane`"
+            ],
+          "accessory": [
+            "type": "button",
+            "text": [
+              "type": "plain_text",
+              "text": "Application URL",
+              "emoji": true
+            ],
+            "value": "click_me_123",
+            "url": "${applicationURL}:32564",
+            "action_id": "button-action"
+          ]
         ]
           ]
         ]
