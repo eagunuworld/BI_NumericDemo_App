@@ -88,7 +88,7 @@ def call(String buildStatus = 'STARTED') {
           "type": "section",
           "text": [
               "type": "mrkdwn",
-              "text": "*Kubernetes Node: * `controlplane`"
+              "text": "*Kubernetes Node: * `${env.failedStage}`"
             ],
           "accessory": [
             "type": "button",
