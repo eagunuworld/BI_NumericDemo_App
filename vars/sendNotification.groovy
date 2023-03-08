@@ -110,11 +110,11 @@ def call(String buildStatus = 'STARTED') {
           "fields": [
             [
               "type": "mrkdwn",
-              "text": "*Git Commit:*\n${_self.COMMIT_HASH}"
+              "text": "*Git Commit:*\n${env.sha_value}"
             ],
             [
               "type": "mrkdwn",
-              "text": "*GIT Previous Success Commit:*\n${GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+              "text": "*GIT Previous Success Commit:*\n${env.privious_commit}"
             ]
           ], 
           "accessory": [
