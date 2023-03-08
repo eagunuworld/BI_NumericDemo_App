@@ -110,7 +110,7 @@ def call(String buildStatus = 'STARTED') {
           "fields": [
             [
               "type": "mrkdwn",
-              "text": "*Commit_value:*\n${env.sha_value}"
+              "text": "*CommitID:*\n${env.sha_value}"
             ],
             [
               "type": "mrkdwn",
@@ -121,6 +121,24 @@ def call(String buildStatus = 'STARTED') {
             "type": "image",
             "image_url": "https://raw.githubusercontent.com/sidd-harth/kubernetes-devops-security/main/slack-emojis/github.png",
             "alt_text": "Github Icon"
+          ]
+        ],
+        [
+          "type": "section",
+          "text": [
+              "type": "mrkdwn",
+              "text": "*Git Branch: * `${GIT_BRANCH}`"
+            ],
+          "accessory": [
+            "type": "button",
+            "text": [
+              "type": "plain_text",
+              "text": "Github Repo URL",
+              "emoji": true
+            ],
+            "value": "click_me_123",
+            "url": "${env.GIT_URL}",
+            "action_id": "button-action"
           ]
         ]
           ]
