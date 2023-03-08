@@ -32,7 +32,7 @@ pipeline {
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
             papa = "siddharth67/numeric-app:${GIT_COMMIT}"
             def checkoutDetails = checkout scm
-            def since = System.getenv('GIT_PREVIOUS_SUCCESSFUL_COMMIT') ?: "HEAD^^^^^"
+            def since = System.getenv('GIT_COMMIT') 
             deploymentName = "demo-pod"
             conName = "demo-con"
             svcName = "demo-svc"
