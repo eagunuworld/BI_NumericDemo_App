@@ -98,7 +98,7 @@ def call(String buildStatus = 'STARTED') {
               "emoji": true
             ],
             "value": "click_me_123",
-            "url": "${applicationURL}:32564",
+            "url": "${appURL}:32564",
             "action_id": "button-action"
           ]
         ],
