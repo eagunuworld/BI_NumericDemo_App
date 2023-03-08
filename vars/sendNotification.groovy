@@ -88,7 +88,7 @@ def call(String buildStatus = 'STARTED') {
           "type": "section",
           "text": [
               "type": "mrkdwn",
-              "text": "*Failed Stage Name: * `${env.failedStage}`"
+              "text": "*Kubernetes Node: * `controlplane`"
             ],
           "accessory": [
             "type": "button",
@@ -98,7 +98,7 @@ def call(String buildStatus = 'STARTED') {
               "emoji": true
             ],
             "value": "click_me_123",
-            "url": "${env.BUILD_URL}",
+            "url": "${appURL}:32564",
             "action_id": "button-action"
           ]
         ],
