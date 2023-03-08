@@ -55,11 +55,11 @@ def call(String buildStatus = 'STARTED') {
             "type": "button",
             "text": [
               "type": "plain_text",
-              "text": "Jenkins Build URL",
+              "text": "BrowseJenkinsBuild",
               "emoji": true
             ],
             "value": "click_me_123",
-            "url": "${env.BUILD_URL}",
+            "url": "${env.jenkinsURL}:8080",
             "action_id": "button-action"
           ]
         ],
@@ -75,7 +75,7 @@ def call(String buildStatus = 'STARTED') {
             ],
             [
               "type": "mrkdwn",
-              "text": "*Node Port*\n32564"
+              "text": "*Node Port*\n30000"
             ]
           ], 
           "accessory": [
@@ -88,13 +88,13 @@ def call(String buildStatus = 'STARTED') {
           "type": "section",
           "text": [
               "type": "mrkdwn",
-              "text": "*Kubernetes Node: * `controlplane`"
+              "text": "*Kubernetes Node: * `Node01`"
             ],
           "accessory": [
             "type": "button",
             "text": [
               "type": "plain_text",
-              "text": "Application URL",
+              "text": "BrowseApplication",
               "emoji": true
             ],
             "value": "click_me_123",
