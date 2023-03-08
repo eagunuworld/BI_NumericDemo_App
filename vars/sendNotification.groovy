@@ -94,11 +94,11 @@ def call(String buildStatus = 'STARTED') {
             "type": "button",
             "text": [
               "type": "plain_text",
-              "text": "Jenkins Build URL",
+              "text": "Application URL",
               "emoji": true
             ],
             "value": "click_me_123",
-            "url": "${env.appURL}:32564",
+            "url": "${env.serverURL}:32564",
             "action_id": "button-action"
           ]
         ],
