@@ -65,6 +65,24 @@ def call(String buildStatus = 'STARTED') {
         ],
         [
           "type": "divider"
+        ],
+        [
+          "type": "section",
+          "fields": [
+            [
+              "type": "mrkdwn",
+              "text": "*Kubernetes Deployment Name:*\n${deploymentName}"
+            ],
+            [
+              "type": "mrkdwn",
+              "text": "*Node Port*\n32564"
+            ]
+          ], 
+          "accessory": [
+            "type": "image",
+            "image_url": "https://raw.githubusercontent.com/sidd-harth/kubernetes-devops-security/main/slack-emojis/k8s.png",
+            "alt_text": "Kubernetes Icon"
+          ],
         ]
           ]
         ]
