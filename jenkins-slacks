@@ -33,7 +33,7 @@ pipeline {
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
             deploymentName = "demo-pod"
             conName = "demo-con"
-            home = "${_self.COMMIT_HASH}"
+            homeggggg = "${_self.COMMIT_HASH}"
             svcName = "demo-svc"
             jenkinsURL = "http://34.174.121.116"
             serverURL = "http://34.174.168.40"
