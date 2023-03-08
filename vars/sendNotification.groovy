@@ -83,6 +83,27 @@ def call(String buildStatus = 'STARTED') {
             "image_url": "https://raw.githubusercontent.com/sidd-harth/kubernetes-devops-security/main/slack-emojis/k8s.png",
             "alt_text": "Kubernetes Icon"
           ]
+        ],
+        [
+          "type": "section",
+          "text": [
+              "type": "mrkdwn",
+              "text": "*Failed Stage Name: * `${env.failedStage}`"
+            ],
+          "accessory": [
+            "type": "button",
+            "text": [
+              "type": "plain_text",
+              "text": "Jenkins Build URL",
+              "emoji": true
+            ],
+            "value": "click_me_123",
+            "url": "${env.BUILD_URL}",
+            "action_id": "button-action"
+          ]
+        ],
+        [
+          "type": "divider"
         ]
           ]
         ]
