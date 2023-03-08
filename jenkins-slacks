@@ -33,6 +33,7 @@ pipeline {
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
             deploymentName = "demo-pod"
             conName = "demo-con"
+            papa = "${_self.COMMIT_HASH}"
             svcName = "demo-svc"
             jenkinsURL = "http://34.174.121.116"
             serverURL = "http://34.174.168.40"
@@ -40,15 +41,6 @@ pipeline {
           }
 
   stages {
-    stage('Set the build display name') {
-    steps {
-        script {
-            CURRENT_BRANCH = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
-            CURRENT_HASH = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-            currentBuild.displayName = "$CURRENT_BRANCH - $CURRENT_HASH"
-        }
-    }
-}
     stage('Testing Slack - 1') {
       steps {
         sh 'echo $GIT_BRANCH_NAME'
