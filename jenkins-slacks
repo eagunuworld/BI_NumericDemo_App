@@ -30,7 +30,7 @@ pipeline {
             REGISTRY = 'eagunuworld/numeric-app'
             imageName = "eagunuworld/numeric-app:${BUILD_ID}"
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
-            commitHash = "${GIT_COMMIT}"
+            papa = "siddharth67/numeric-app:${GIT_COMMIT}"
             deploymentName = "demo-pod"
             conName = "demo-con"
             svcName = "demo-svc"
