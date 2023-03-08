@@ -47,7 +47,7 @@ pipeline {
             }
 
             sh 'echo BRANCH_NAME ${GIT_BRANCH_NAME}'
-            git branch: GIT_BRANCH_NAME, credentialsId: '******', url: 'https://github.com/eagunuworld/BI_NumericDemo_App.git'
+            git branch: GIT_BRANCH_NAME, credentialsId: 'eagunuworld-github-authentication-token', url: 'https://github.com/eagunuworld/BI_NumericDemo_App.git'
       }
      }
     stage('Testing Slack - 1') {
