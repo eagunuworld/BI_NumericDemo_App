@@ -88,7 +88,7 @@ def call(String buildStatus = 'STARTED') {
           "type": "section",
           "text": [
               "type": "mrkdwn",
-              "text": "*Kubernetes Node: * `${env.failedStage}`"
+              "text": "*Kubernetes Node: * `${env.serverUR}`"
             ],
           "accessory": [
             "type": "button",
@@ -104,6 +104,24 @@ def call(String buildStatus = 'STARTED') {
         ],
         [
           "type": "divider"
+        ],
+        [
+          "type": "section",
+          "fields": [
+            [
+              "type": "mrkdwn",
+              "text": "*Git Commit:*\n${VERSION}"
+            ],
+            [
+              "type": "mrkdwn",
+              "text": "*GIT Previous Success Commit:*\n${GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+            ]
+          ], 
+          "accessory": [
+            "type": "image",
+            "image_url": "https://raw.githubusercontent.com/sidd-harth/kubernetes-devops-security/main/slack-emojis/github.png",
+            "alt_text": "Github Icon"
+          ]
         ]
           ]
         ]
