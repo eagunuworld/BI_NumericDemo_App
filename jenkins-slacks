@@ -12,10 +12,10 @@ pipeline {
          timestamps()
         }
 
-    //  parameters {
-    //       choice choices: ['main', 'owasp_zap_scanning', 'lab_mutation_Test', 'walmart-dev-mss', 'dependencyCheckTrivyOpenContest'], description: 'This is choice paramerized job', name: 'BranchName'
-    //       string defaultValue: 'Eghosa DevOps', description: 'please developer select the person\' name', name: 'personName'
-    //     }
+     parameters {
+          choice choices: ['main', 'owasp_zap_scanning', 'lab_mutation_Test', 'walmart-dev-mss', 'dependencyCheckTrivyOpenContest'], description: 'This is choice paramerized job', name: 'BranchName'
+          string defaultValue: 'Eghosa DevOps', description: 'please developer select the person\' name', name: 'personName'
+        }
 
 
   tools{
@@ -31,7 +31,7 @@ pipeline {
             REGISTRY = 'eagunuworld/numeric-app'
             imageName = "eagunuworld/numeric-app:${BUILD_ID}"
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
-            def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'owasp_zap_scanning']], userRemoteConfigs: [[url: 'https://github.com/eagunuworld/BI_NumericDemo_App.git']]])
+            def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'master']], userRemoteConfigs: [[url: 'https://github.com/eagunuworld/BI_NumericDemo_App.git']]])
             scmVarsg = "${scmVars.GIT_COMMIT}"
             GIT_BRANCH = "${scmVars.GIT_BRANCH}"
             deploymentName = "demo-pod"
