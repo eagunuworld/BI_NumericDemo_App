@@ -86,15 +86,15 @@ pipeline {
           }
 
   stages {
-    stage('Testing Slack - 1') {
+    stage('Testing Slack One') {
       steps {
         sh 'printenv'
       }
     }
      
-    stage('Testing Slack - Error Stage') {
+    stage('Testing Slack - Pass  Stage') {
       steps {
-        sh 'exit 1'
+        sh 'exit 0'
       }
     }
 
