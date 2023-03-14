@@ -74,10 +74,9 @@ pipeline {
             REGISTRY = 'eagunuworld/numeric-app'
             imageName = "eagunuworld/numeric-app:${BUILD_ID}"
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
-            def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'master']], userRemoteConfigs: [[url: 'https://github.com/eagunuworld/BI_NumericDemo_App.git']]])
-            sha_value = "${scmVars.GIT_COMMIT}"
-            privious_commit = "${scmVars.GIT_BRANCH}"
-            deploymentName = "demo-pod"
+            //def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'master']], userRemoteConfigs: [[url: 'https://github.com/eagunuworld/BI_NumericDemo_App.git']]])
+            //sha_value = "${scmVars.GIT_COMMIT}"
+            //deploymentName = "demo-pod"
             conName = "demo-con"
             svcName = "demo-svc"
             jenkinsURL = "http://34.125.227.27"
