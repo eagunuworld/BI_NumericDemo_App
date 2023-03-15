@@ -45,17 +45,19 @@ pipeline {
       }
     }
 
-   stage('Mutation Tests - PIT') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+   stage('CodesVulnerabilityScanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
       steps {
          parallel(
-               "Mutation Test PIT": {
+               "PitMutationTestReport": {
                     sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
                   },
-                  "Dependency Check": {
+                  "DependencyCheckReport": {
                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
                   },
-                 "OPA Conftest": {
-                  sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+                 "StaticAppSecurityTesting": {
+                  withSonarQubeEnv('sonarQube') {
+                    sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://34.125.84.141:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
+                   }
                }
              )
          }

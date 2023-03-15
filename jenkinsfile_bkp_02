@@ -61,21 +61,21 @@ pipeline {
          }
       }
 
-    // stage('SonarQube - SAST') {
-    //   steps {
-    //     withSonarQubeEnv('sonarQube') {
-    //       sh "mvn clean package sonar:sonar \
-    //        -Dsonar.projectKey=eagunu-number \
-    //        -Dsonar.host.url=http://34.16.128.183:9000 \
-    //        -Dsonar.login=sqp_b920c762c89da87913cee2831bb77addc36c73b6"
-    //     }
-    //     timeout(time: 2, unit: 'MINUTES') {
-    //       script {
-    //         waitForQualityGate abortPipeline: true
-    //       }
-    //     }
-    //   }
-    // }
+    stage('SonarQube - SAST') {
+      steps {
+        withSonarQubeEnv('sonarQube') {
+          sh "mvn clean package sonar:sonar \
+           -Dsonar.projectKey=eagunu-number \
+           -Dsonar.host.url=http://34.16.128.183:9000 \
+           -Dsonar.login=sqp_b920c762c89da87913cee2831bb77addc36c73b6"
+        }
+        timeout(time: 2, unit: 'MINUTES') {
+          script {
+            waitForQualityGate abortPipeline: true
+          }
+        }
+      }
+    }
     //  stage('SonarQube - SAST') {      //without qg and connected using jenkins url to sonar webhook(administration>configuration)
     //   steps {
     //     sh "mvn clean package sonar:sonar \
