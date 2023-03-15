@@ -91,10 +91,10 @@ pipeline {
                    sh 'docker build -t ${REGISTRY}:${VERSION} .'
                 }
                 sh 'docker push ${REGISTRY}:${VERSION}' 
-              },
-                "BasedImage": {
-                  sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile"
-                }
+               }
+              //   "BasedImage": {
+              //   sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile"
+              //   }
              )
          }
       }
@@ -118,9 +118,9 @@ pipeline {
                   "ScanningDeploymentFile": {
                     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego west-prod-deploy.yml'
                    },
-                  //  "BasedImage": {
-                  //   sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile"
-                  //  },
+                   "BasedImage": {
+                    sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile"
+                   },
                  "kubesec Scannning": {
                   sh 'bash kubesec-scan.sh'
                 }
