@@ -47,6 +47,25 @@ pipeline {
       }
     }
 
+   stage('Unit Tests - JUnit and JaCoCo') {
+      steps {
+          sh "mvn test"
+        }
+     }
+
+    stage('SonarQube - SAST') {
+      steps {
+        withSonarQubeEnv('sonarQube') {
+          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://34.125.84.141:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
+         }
+        timeout(time: 2, unit: 'MINUTES') {
+          script {
+            waitForQualityGate abortPipeline: true
+          }
+        }
+      }
+    }
+
    stage('CodesVulnerabilityScanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
       steps {
          parallel(
@@ -67,6 +86,8 @@ pipeline {
   } // pipeline stages end here 
    post {
         always {
+        junit 'target/surefire-reports/*.xml'
+        jacoco execPattern: 'target/jacoco.exec'
         pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
         dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
        }
