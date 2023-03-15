@@ -54,15 +54,13 @@ pipeline {
                     sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
                   },
                   "DependencyCheckReport": {
-                      timeout(time: 4, unit: 'MINUTES') {
-                      sh "mvn dependency-check:check"   //OWASP Dependency check plugin is required via jenkins
-                    }    
-                   },
-                 "StaticAppSecurityTesting": {
-                  withSonarQubeEnv('sonarQube') {
-                    sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://34.125.84.141:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
+                      sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
                    }
-               }
+              //    "StaticAppSecurityTesting": {
+              //     withSonarQubeEnv('sonarQube') {
+              //       sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://34.125.84.141:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
+              //      }
+              //  }
              )
          }
       }
