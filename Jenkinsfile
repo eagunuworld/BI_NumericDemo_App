@@ -74,15 +74,24 @@ pipeline {
                   },
                   "DependencyCheckReport": {
                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
-                   }
-              //    "StaticAppSecurityTesting": {
-              //     withSonarQubeEnv('sonarQube') {
-              //       sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://34.125.84.141:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
-              //      }
-              //  }
+                   },
+                 "DisplayContents": {
+                  sh "ls -lart"
+               }
              )
          }
       }
+
+   stage('Push Docker Image To DockerHub') {
+        steps {
+            withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
+              sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
+              sh 'docker build -t ${REGISTRY}:${VERSION} .'
+                }
+                 sh 'docker push ${REGISTRY}:${VERSION}'
+              }
+          }
+
   } // pipeline stages end here 
    post {
         always {
