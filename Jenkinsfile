@@ -54,7 +54,7 @@ pipeline {
                     sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
                   },
                   "DependencyCheckReport": {
-                      timeout(time: 2, unit: 'MINUTES') {
+                      timeout(time: 4, unit: 'MINUTES') {
                       sh "mvn dependency-check:check"   //OWASP Dependency check plugin is required via jenkins
                     }    
                    },
