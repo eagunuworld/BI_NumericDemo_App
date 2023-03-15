@@ -11,7 +11,7 @@ pipeline {
        options {
          buildDiscarder logRotator( artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '1', numToKeepStr: '1')
          timestamps()
-         skipDefaultCheckout(true)
+         //skipDefaultCheckout(true)
         }
 
      parameters {
@@ -41,7 +41,7 @@ pipeline {
   stages {
     stage('Build Artifact - Maven') {
       steps {
-         cleanWs()
+         //cleanWs()
         sh "mvn clean package -DskipTests=true"
         archiveArtifacts 'target/*.jar'
       }
