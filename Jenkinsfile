@@ -75,22 +75,58 @@ pipeline {
                   "DependencyCheckReport": {
                       sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
                    },
-                 "DisplayContents": {
-                  sh "ls -lart"
+                 "EnvironmentVariables": {
+                  sh "printenv"
                }
              )
          }
       }
 
-   stage('Push Docker Image To DockerHub') {
-        steps {
-            withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
-              sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
-              sh 'docker build -t ${REGISTRY}:${VERSION} .'
+  stage('ScanningBasedPushImage') {  
+      steps {
+         parallel(
+               "ScanningAppImage": {
+                 withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
+                   sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
+                   sh 'docker build -t ${REGISTRY}:${VERSION} .'
                 }
-                 sh 'docker push ${REGISTRY}:${VERSION}'
-              }
-          }
+                sh 'docker push ${REGISTRY}:${VERSION}' 
+              },
+                "BasedImage": {
+                  sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile"
+                }
+             )
+         }
+      }
+
+  //  stage('Push Docker Image To DockerHub') {
+  //       steps {
+  //           withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
+  //             sh "docker login -u eagunuworld -p ${eagunuworld_dockerhub_creds} "
+  //             sh 'docker build -t ${REGISTRY}:${VERSION} .'
+  //               }
+  //               sh 'docker push ${REGISTRY}:${VERSION}'
+  //           }
+  //         }
+
+    stage('ManifestK8SVulnerabilitYScanning') {  
+      steps {
+         parallel(
+               "ScanningAppImage": {
+                    sh "bash trivy-k8s-scan.sh" 
+                  },
+                  "ScanningDeploymentFile": {
+                    sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego west-prod-deploy.yml'
+                   },
+                  //  "BasedImage": {
+                  //   sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile"
+                  //  },
+                 "kubesec Scannning": {
+                  sh 'bash kubesec-scan.sh'
+                }
+             )
+         }
+      }
 
   } // pipeline stages end here 
    post {
