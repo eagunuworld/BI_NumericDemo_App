@@ -85,7 +85,7 @@ pipeline {
           }
 
   stages {
-    stage('DisplayProperties') {
+    stage('DisplayEnvProperties') {
       steps {
         sh 'printenv'
       }
