@@ -85,7 +85,7 @@ pipeline {
           }
 
   stages {
-    stage('Testing Slack One') {
+    stage('DisplayProperties') {
       steps {
         sh 'printenv'
       }
