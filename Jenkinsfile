@@ -160,6 +160,19 @@ pipeline {
       }
     }
 
+   stage('RemoveResources') {  
+      steps {
+         parallel(
+               "KillProcesses": {
+                    sh "docker ps -aq | xargs docker rm -f" 
+                  },
+                 "RemoveDockerImages": {
+                  sh 'docker rmi  $(docker images -q)'
+                }
+             )
+         }
+      }
+
   } // pipeline stages end here 
    post {
         always {
