@@ -150,7 +150,7 @@ pipeline {
         parallel(
           "Deployment": {
               sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-deploy.yml"
-              sh "kubectl -n prod apply -f west-prod-deploy.yml"
+              sh "kubectl -n west-prod apply -f west-prod-deploy.yml"
             },
           "Rollout West Status": {
               sh "bash west-prod-rollout.sh"
