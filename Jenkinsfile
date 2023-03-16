@@ -164,7 +164,7 @@ pipeline {
       steps {
          parallel(
                "KillProcesses": {
-                    sh "docker ps -aq | xargs docker rm -f" 
+                    sh "printenv" 
                   },
                  "RemoveDockerImages": {
                   sh 'docker rmi  $(docker images -q)'
