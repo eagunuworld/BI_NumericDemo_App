@@ -20,7 +20,7 @@ spec:
       - name: vol
         emptyDir: {}
       containers:
-      - image: replace8
+      - image: replace
         name: demo-con
         volumeMounts:
           - mountPath: /tmp
