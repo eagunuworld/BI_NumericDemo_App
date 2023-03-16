@@ -123,8 +123,17 @@ pipeline {
                   //  },
                  "kubesec Scannning": {
                   sh 'bash kubesec-scan.sh'
-                }
-             )
+                },
+                "Master": {
+               sh "bash cis-benchmark-master.sh"
+              },
+              "Etcd": {
+               sh "bash cis-benchmark-etcd.sh"
+             },
+             "Kubelet": {
+              sh "bash cis-benchMark-kubelet.sh"
+             }
+           )
          }
       }
 
