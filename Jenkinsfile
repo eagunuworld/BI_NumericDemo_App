@@ -137,6 +137,28 @@ pipeline {
          }
       }
 
+    stage('PleaseApprove West-Prod?') {
+      steps {
+        timeout(time: 2, unit: 'DAYS') {
+          input 'Do you want to Approve  West Production Environment/Namespace Deployment?'
+        }
+      }
+    }
+
+ stage('west-prod') {
+      steps {
+        parallel(
+          "Deployment": {
+              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-deploy.yml"
+              sh "kubectl -n prod apply -f west-prod-deploy.yml"
+            },
+          "Rollout West Status": {
+              sh "bash west-prod-rollout.sh"
+          }
+        )
+      }
+    }
+
   } // pipeline stages end here 
    post {
         always {
