@@ -56,7 +56,7 @@ pipeline {
     stage('SonarQube - SAST') {
       steps {
         withSonarQubeEnv('sonarQube') {
-          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://34.125.84.141:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
+          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://10.182.0.3:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
          }
         // timeout(time: 2, unit: 'MINUTES') {
         //   script {
@@ -91,10 +91,10 @@ pipeline {
                    sh 'docker build -t ${REGISTRY}:${VERSION} .'
                 }
                 sh 'docker push ${REGISTRY}:${VERSION}' 
-               }
-              //   "BasedImage": {
-              //   sh "docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile"
-              //   }
+               },
+                "BasedImage": {
+                sh "sudo rm -rf trivy"
+                }
              )
          }
       }
