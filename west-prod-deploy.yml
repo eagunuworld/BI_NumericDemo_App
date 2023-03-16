@@ -20,7 +20,7 @@ spec:
       - name: vol
         emptyDir: {}
       containers:
-      - image: replace
+      - image: replace8
         name: demo-con
         volumeMounts:
           - mountPath: /tmp
@@ -54,4 +54,4 @@ spec:
     targetPort: 8080
   selector:
     app: demo-svc
-  type: ClusterIP
+  type: NodePort
