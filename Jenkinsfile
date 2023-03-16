@@ -56,7 +56,7 @@ pipeline {
     stage('SonarQube - SAST') {
       steps {
         withSonarQubeEnv('sonarQube') {
-          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://10.182.0.3:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
+          sh "mvn clean package sonar:sonar -Dsonar.projectKey=eagunu-number-app -Dsonar.host.url=http://34.125.120.24:9000 -Dsonar.login=sqp_5705583cefa89faa42f1fb1cf60944e8dae42248"
          }
         // timeout(time: 2, unit: 'MINUTES') {
         //   script {
