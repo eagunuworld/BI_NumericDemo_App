@@ -46,12 +46,13 @@ kind: Service
 metadata:
   labels:
     app: demo-svc
-  name: demo-svc-svc
+  name: demo-svc
 spec:
   ports:
   - port: 8080
     protocol: TCP
     targetPort: 8080
+    nodePort: 30001
   selector:
     app: demo-svc
   type: NodePort

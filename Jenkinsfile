@@ -33,8 +33,9 @@ pipeline {
             deploymentName = "demo-pod"
             conName = "demo-con"
             svcName = "demo-svc"
-            jenkinsURL = "http://34.125.227.27"
-            serverURL = "http://34.174.151.201"
+            svcPort = "30001"
+            jenkinsURL = "http://34.125.84.141"
+            serverURL = "http://34.174.188.235"
             appURI = "increment/99"
           }
 

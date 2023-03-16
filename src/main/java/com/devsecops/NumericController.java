@@ -27,7 +27,7 @@ public class NumericController {
 
 		@GetMapping("/")
 		public String welcome() {
-			return "Eghosa Agunu CKS Specialist Programme 2025";
+			return "Eghosa Agunu Application Security Testing";
 		}
 
 		@GetMapping("/compare/{value}")
