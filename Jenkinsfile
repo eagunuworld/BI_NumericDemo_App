@@ -35,6 +35,9 @@ pipeline {
             westCon = "west-prod-con"
             conName = "numeric-con"
             svcName = "numeric-svc"
+            svcPort = "30005"
+            svcName = "west-prod-svc"
+            jenkinsURL = "http://34.125.127.99"
             serverURL = "34.174.30.70"
             appURI = "increment/99"
           }
