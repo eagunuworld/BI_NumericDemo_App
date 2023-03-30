@@ -34,7 +34,7 @@ pipeline {
             westdDeploy = "west-prod-pod"
             westCon = "west-prod-con"
             conName = "numeric-con"
-            svcName = "numeric-svc"
+            //svcName = "numeric-svc"
             svcPort = "30005"
             svcName = "west-prod-svc"
             jenkinsURL = "http://34.125.127.99"
