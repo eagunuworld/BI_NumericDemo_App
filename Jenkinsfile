@@ -150,8 +150,8 @@ pipeline {
               sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-pod.yml"
               sh "kubectl -n west-prod apply -f west-prod-pod.yml"
             },
-          "Rollout West Status": {
-              sh "bash west-prod-rollout.sh"
+          "create west-prod svc": {
+              sh "west-prod-svc.yml"
           },
           "Rollout West Status": {
             sh "bash west-prod-rollout.sh"
