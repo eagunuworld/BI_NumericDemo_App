@@ -4,39 +4,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: demo-svc
-  name: demo-pod
+    app: lab-numeric-pod
+  name: numeric-pod
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: demo-svc
+      app: sel-numeric
   strategy: {}
   template:
     metadata:
       labels:
-        app: demo-svc
+        app: sel-numeric
     spec:
       serviceAccountName: default
       containers:
       - image: replace
-        name: demo-con
+        name: numeric-con
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: demo-svc
-  name: demo-svc
-spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
-    nodePort: 30004
-  selector:
-    app: demo-svc
-  type: NodePort

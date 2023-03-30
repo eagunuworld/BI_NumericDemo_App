@@ -2,18 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: demo-svc
-  name: demo-pod
+    app: lab-west-prod
+  name: west-prod-pod
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: demo-svc
+      app: lab-west-prod
   strategy: {}
   template:
     metadata:
       labels:
-        app: demo-svc
+        app: lab-west-prod
     spec:
       serviceAccountName: default
       volumes:
@@ -40,18 +40,3 @@ spec:
          limits:
           memory: "512Mi"
           cpu: "500m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: demo-svc
-  name: demo-svc-svc
-spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
-  selector:
-    app: demo-svc
-  type: ClusterIP

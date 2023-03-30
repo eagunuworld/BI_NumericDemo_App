@@ -18,7 +18,7 @@ pipeline {
         }
 
   tools{
-      maven 'demo-maven:3.8.6'
+      maven 'numeric-maven:3.8.6'
       }
 
    environment {
@@ -30,10 +30,10 @@ pipeline {
             REGISTRY = 'eagunuworld/numeric-app'
             imageName = "eagunuworld/numeric-app:${BUILD_ID}"
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
-            deploymentName = "demo-pod"
-            conName = "demo-con"
-            svcName = "demo-svc"
-            serverURL = "34.174.121.116"
+            deploymentName = "numeric-pod"
+            conName = "numeric-con"
+            svcName = "numeric-svc"
+            serverURL = "34.174.30.70"
             appURI = "increment/99"
           }
 
@@ -45,23 +45,23 @@ pipeline {
       }
     }
 
-  //  stage('CodeDockerVulnerability Scanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
-  //     steps {
-  //        parallel(
-  //              "Mutation Test PIT": {
-  //                   sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
-  //                 },
-  //                 "Dependency Check": {
-  //                     sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
-  //                  },
-  //                  "TrivyImage": {
-  //                   sh "sudo rm -rf trivy"
-  //                  },
-  //                "OPA Conftest": {
-  //                 sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
-  //               }
-  //            )
-  //        }
+   stage('CodeDockerVulnerability Scanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+      steps {
+         parallel(
+               "Mutation Test PIT": {
+                    sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
+                  },
+                  "Dependency Check": {
+                      sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+                   },
+                   "TrivyImage": {
+                    sh "sudo rm -rf trivy"
+                   },
+                 "OPA Conftest": {
+                  sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+                }
+             )
+         }
   //     }
 
    stage('Push Docker Image To DockerHub') {
@@ -106,6 +106,12 @@ pipeline {
             },
             "Kubelet": {
               sh "bash cis-benchMark-kubelet.sh"
+            },
+            "north-mpm ns": {
+              sh "kubectl apply -f north-mpm-ns.yml"
+            },
+            "Kubelet": {
+              sh "bash cis-benchMark-kubelet.sh"
             }
           )
 
@@ -113,22 +119,25 @@ pipeline {
       }
     }
 
-   
-  stage('north-mpm-deploy') {
+
+  stage('Dev-mpm-deploy') {
       steps {
         parallel(
           "Deployment": {
-              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-deploy.yaml"
-              sh "kubectl -n prod apply -f north-mpm-deploy.yaml"
+              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-pod.yaml"
+              sh "kubectl -n north-mpm apply -f north-mpm-pod.yaml"
             },
           "Rollout North Status": {
-              sh "bash north-mpm-rollout.sh"
+            sh "bash north-mpm-rollout.sh"
+          },
+          "create north-mpm svc": {
+            sh "kubectl -n north-mpm apply north-mpm-svc.yml"
           }
         )
       }
     }
 
- stage('Approve West-Prod?') {
+ stage('Kindly Review And Approve West-Prod?') {
       steps {
         timeout(time: 2, unit: 'DAYS') {
           input 'Do you want to Approve the Deployment to West Production Environment/Namespace?'
@@ -140,11 +149,14 @@ pipeline {
       steps {
         parallel(
           "Deployment": {
-              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-deploy.yml"
-              sh "kubectl -n prod apply -f west-prod-deploy.yml"
+              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-pod.yml"
+              sh "kubectl -n west-prod apply -f west-prod-pod.yml"
             },
           "Rollout West Status": {
               sh "bash west-prod-rollout.sh"
+          },
+          "Rollout West Status": {
+            sh "bash west-prod-rollout.sh"
           }
         )
       }
@@ -186,8 +198,8 @@ pipeline {
         always {
         // junit 'target/surefire-reports/*.xml'
         // jacoco execPattern: 'target/jacoco.exec'
-        // pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-        // dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+        pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+        dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
         // publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
         // Use sendNotifications.groovy from shared library and provide current build result as parameter   
         //slacksharedlibrary currentBuild.result 
