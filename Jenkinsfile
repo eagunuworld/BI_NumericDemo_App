@@ -76,7 +76,7 @@ pipeline {
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
             //def scmVars = checkout([$class: 'GitSCM', branches: [[name: 'master']], userRemoteConfigs: [[url: 'https://github.com/eagunuworld/BI_NumericDemo_App.git']]])
             //sha_value = "${scmVars.GIT_COMMIT}"
-            deploymentName = "demo-pod"
+            westdDeploy = "demo-pod"
             conName = "demo-con"
             svcName = "demo-svc"
             jenkinsURL = "http://34.125.227.27"
