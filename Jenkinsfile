@@ -47,7 +47,7 @@ pipeline {
   //kubectl -n default create deploy node-app --image siddharth67/node-service:v1
   //kubectl -n default expose deploy node-app --name node-service --port 5000
    agent{
-      label "node01"
+      label "numericAgent"
        }
 
        options {
