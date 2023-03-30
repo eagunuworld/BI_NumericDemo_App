@@ -1,8 +1,8 @@
 @Library('mss-sharedlibrary') _
 pipeline {
   //agent any
-  //kubectl -n default create deploy node-app --image siddharth67/node-service:v1
-  //kubectl -n default expose deploy node-app --name node-service --port 5000
+  // kubectl -n north-mpm create deploy node-app --image siddharth67/node-service:v1
+  // kubectl -n north-mpm expose deploy node-app --name node-service --port 5000
    agent{
       label "numericAgent"
        }
@@ -129,7 +129,7 @@ pipeline {
             sh "bash north-mpm-rollout.sh"
           },
           "create north-mpm svc": {
-            sh "kubectl -n north-mpm apply north-mpm-svc.yml"
+            sh "kubectl -n north-mpm apply -f north-mpm-svc.yml"
           }
         )
       }
@@ -151,7 +151,7 @@ pipeline {
               sh "kubectl -n west-prod apply -f west-prod-pod.yml"
             },
           "create west-prod svc": {
-              sh "west-prod-svc.yml"
+              sh "kubectl -n west-prod apply -f west-prod-svc.yml"
           },
           "Rollout West Status": {
             sh "bash west-prod-rollout.sh"
