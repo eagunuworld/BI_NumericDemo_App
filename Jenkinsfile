@@ -80,7 +80,7 @@ pipeline {
             conName = "demo-con"
             svcName = "demo-svc"
             svcPort = "30004"
-            mss-node = "http://34.174.184.64"
+            mssNode01 = "http://34.174.184.64"
             jenkinsURL = "http://34.125.227.27"
             serverURL = "http://34.174.151.201"
             appURI = "increment/99"
