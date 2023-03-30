@@ -21,7 +21,7 @@ spec:
         emptyDir: {}
       containers:
       - image: replace
-        name: demo-con
+        name: west-prod-con
         volumeMounts:
           - mountPath: /tmp
             name: vol

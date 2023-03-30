@@ -2,11 +2,11 @@
 #!/bin/bash
 sleep 20s
 
-if [[ $(kubectl -n west-prod rollout status deploy ${deploymentName} --timeout 5s) != *"successfully rolled out"* ]]; 
+if [[ $(kubectl -n west-prod rollout status deploy ${westdDeploy} --timeout 5s) != *"successfully rolled out"* ]]; 
 then     
-	echo "Deployment ${deploymentName} Rollout has Failed"
-    kubectl -n west-prod rollout undo deploy ${deploymentName}
+	echo "Deployment ${westdDeploy} Rollout has Failed"
+    kubectl -n west-prod rollout undo deploy ${westdDeploy}
     exit 1;
 else
-	echo "Deployment ${deploymentName} Rollout in west is Success"
+	echo "Deployment ${westdDeploy} Rollout in west is Success"
 fi

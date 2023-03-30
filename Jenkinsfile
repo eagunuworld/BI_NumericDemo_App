@@ -30,7 +30,9 @@ pipeline {
             REGISTRY = 'eagunuworld/numeric-app'
             imageName = "eagunuworld/numeric-app:${BUILD_ID}"
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
-            deploymentName = "numeric-pod"
+            northDeploy = "numeric-pod"
+            westdDeploy = "west-prod-pod"
+            westCon = "west-prod-con"
             conName = "numeric-con"
             svcName = "numeric-svc"
             serverURL = "34.174.30.70"
