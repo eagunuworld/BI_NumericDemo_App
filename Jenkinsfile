@@ -146,7 +146,7 @@ pipeline {
  stage('west-prod') {
       steps {
         parallel(
-          "Deployment": {
+          "west-prod Deploy": {
               sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' west-prod-pod.yml"
               sh "kubectl -n west-prod apply -f west-prod-pod.yml"
             },
