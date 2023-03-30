@@ -62,7 +62,7 @@ pipeline {
                 }
              )
          }
-  //     }
+       }
 
    stage('Push Docker Image To DockerHub') {
         steps {
@@ -96,7 +96,6 @@ pipeline {
     stage('K8S CIS Benchmark') {
       steps {
         script {
-
           parallel(
             "Master": {
               sh "bash cis-benchmark-master.sh"
@@ -110,11 +109,10 @@ pipeline {
             "north-mpm ns": {
               sh "kubectl apply -f north-mpm-ns.yml"
             },
-            "Kubelet": {
-              sh "bash cis-benchMark-kubelet.sh"
+            "west-prod ns": {
+              sh "kubectl apply -f west-prod-ns.yml"
             }
           )
-
         }
       }
     }
