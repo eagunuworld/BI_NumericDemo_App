@@ -13,4 +13,4 @@ spec:
     nodePort: 30005
   selector:
     app: lab-west-prod
-  type: ClusterIP
+  type: NodePort
