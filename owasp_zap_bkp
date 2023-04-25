@@ -5,7 +5,7 @@ pipeline {
   // kubectl -n north-mpm expose deploy node-app --name node-service --port 5000
   // docker run -d -p 5000:5000 --name node-service siddharth67/node-service:v1
    agent{
-      label "BI_NumericDemo_App"
+      label "numericAgent"
        }
 
        options {
@@ -14,7 +14,7 @@ pipeline {
         }
 
      parameters {
-          choice choices: ['main', 'owasp_zap_api_scanning', 'lab_mutation_Test'], description: 'This is choice paramerized job', name: 'BranchName'
+          choice choices: ['main', 'owasp_zap_scanning', 'lab_mutation_Test', 'walmart-dev-mss', 'dependencyCheckTrivyOpenContest'], description: 'This is choice paramerized job', name: 'BranchName'
           string defaultValue: 'Eghosa DevOps', description: 'please developer select the person\' name', name: 'personName'
         }
 
@@ -25,12 +25,17 @@ pipeline {
    environment {
             DEPLOY = "${env.BRANCH_NAME == "python-dramed" || env.BRANCH_NAME == "master" ? "true" : "false"}"
             NAME = "${env.BRANCH_NAME == "python-dramed" ? "example" : "example-staging"}"
+            //def mavenHome =  tool name: "maven:3.6.3", type: "maven"
+            //def mavenCMD = "${mavenHome}/usr/share/maven"
             VERSION = "${env.BUILD_ID}"
             REGISTRY = 'eagunuworld/numeric-app'
             imageName = "eagunuworld/numeric-app:${BUILD_ID}"
             REGISTRY_CREDENTIAL = 'eagunuworld_dockerhub_creds'
+            northDeploy = "numeric-pod"
             westdDeploy = "west-prod-pod"
             westCon = "west-prod-con"
+            conName = "numeric-con"
+            //svcName = "numeric-svc"
             svcPort = "30005"
             svcName = "west-prod-svc"
             jenkinsURL = "http://34.125.210.113"
@@ -46,6 +51,25 @@ pipeline {
       }
     }
 
+   stage('CodeDockerVulnerability Scanning') {    //(Pit mutation) is a plugin in jenkis and plugin was added in pom.xml line 68
+      steps {
+         parallel(
+               "Mutation Test PIT": {
+                    sh "mvn org.pitest:pitest-maven:mutationCoverage"  //section 3 video
+                  },
+                  "Dependency Check": {
+                      sh "mvn dependency-check:check"    //OWASP Dependency check plugin is required via jenkins
+                   },
+                   "TrivyImage": {
+                    sh "sudo rm -rf trivy"
+                   },
+                 "OPA Conftest": {
+                  sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
+                }
+             )
+         }
+       }
+
    stage('Push Docker Image To DockerHub') {
         steps {
             withCredentials([string(credentialsId: 'eagunuworld_dockerhub_creds', variable: 'eagunuworld_dockerhub_creds')])  {
@@ -55,6 +79,25 @@ pipeline {
                  sh 'docker push ${REGISTRY}:${VERSION}'
               }
           }
+
+// stage('KubernetesVulnerability Scanning') {  
+//       steps {
+//          parallel(
+//                "ScanningImage": {
+//                     sh "bash trivy-k8s-scan.sh" 
+//                   },
+//                   "ScanningDeploymentFile": {
+//                     sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego west-prod-deploy.yml'
+//                    },
+//                    "printingEnv": {
+//                     sh "printenv "
+//                    },
+//                  "kubesec Scannning": {
+//                   sh 'bash kubesec-scan.sh'
+//                 }
+//              )
+//          }
+//       }
 
     stage('K8S CIS Benchmark') {
       steps {
@@ -68,9 +111,33 @@ pipeline {
             },
             "Kubelet": {
               sh "bash cis-benchMark-kubelet.sh"
+            },
+            "north-mpm ns": {
+              sh "kubectl apply -f north-mpm-ns.yml"
+            },
+            "west-prod ns": {
+              sh "kubectl apply -f west-prod-ns.yml"
             }
           )
         }
+      }
+    }
+
+
+  stage('Dev-mpm-deploy') {
+      steps {
+        parallel(
+          "Deployment": {
+              sh "sed -i 's#replace#${REGISTRY}:${VERSION}#g' north-mpm-pod.yaml"
+              sh "kubectl -n north-mpm apply -f north-mpm-pod.yaml"
+            },
+          "Rollout North Status": {
+            sh "bash north-mpm-rollout.sh"
+          },
+          "create north-mpm svc": {
+            sh "kubectl -n north-mpm apply -f north-mpm-svc.yml"
+          }
+        )
       }
     }
 
@@ -111,11 +178,11 @@ pipeline {
   //     }
   //   }
  
-  stage('OWASP ZAP - DAST') {
-      steps {
-          sh 'bash zap.sh'
-        }
-      }
+  // stage('OWASP ZAP - DAST') {
+  //     steps {
+  //         sh 'bash zap.sh'
+  //       }
+  //     }
 
   //  stage('RemoveResources') {  
   //     steps {
