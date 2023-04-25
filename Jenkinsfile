@@ -68,6 +68,9 @@ pipeline {
             },
             "Kubelet": {
               sh "bash cis-benchMark-kubelet.sh"
+            },
+            "west-prod ns": {
+              sh "kubectl apply -f west-prod-ns.yml"
             }
           )
         }
