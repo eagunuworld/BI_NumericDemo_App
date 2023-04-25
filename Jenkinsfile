@@ -1,8 +1,8 @@
 @Library('mss-sharedlibrary') _
 pipeline {
   //agent any
-  // kubectl -n north-mpm create deploy node-app --image siddharth67/node-service:v1
-  // kubectl -n north-mpm expose deploy node-app --name node-service --port 5000
+  // kubectl -n west-prod  create deploy node-app --image siddharth67/node-service:v1
+  // kubectl -n west-prod  expose deploy node-app --name node-service --port 5000
   // docker run -d -p 5000:5000 --name node-service siddharth67/node-service:v1
    agent{
       label "BI_NumericDemo_App"
@@ -34,7 +34,7 @@ pipeline {
             svcPort = "30005"
             svcName = "west-prod-svc"
             jenkinsURL = "http://34.125.210.113"
-            serverURL = "34.174.30.70"
+            serverURL = "34.174.90.141"
             appURI = "increment/99"
           }
 
